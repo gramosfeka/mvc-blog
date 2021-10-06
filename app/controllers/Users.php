@@ -59,6 +59,7 @@
                     $this->view('users/register', $data);
                 }
 
+
             }else{
                 $data = [
                     'name' => '',
