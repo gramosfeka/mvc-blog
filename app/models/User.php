@@ -10,10 +10,11 @@
 
 
         public function register($data){
-            $this->db->query('INSERT INTO users (name, email, password) VALUES (:name, :email, :password)');
+            $this->db->query('INSERT INTO users (name, email, password, created_at) VALUES (:name, :email, :password, :created_at)');
             $this->db->bind(':name', $data['name']);
             $this->db->bind(':email', $data['email']);
             $this->db->bind(':password', $data['password']);
+            $this->db->bind(':created_at', $data['created_at']);
 
             if($this->db->execute()){
                 return true;
@@ -51,4 +52,6 @@
             }
 
         }
+
+
     }
