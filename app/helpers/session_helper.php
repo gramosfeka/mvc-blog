@@ -21,3 +21,30 @@
             }
         }
     }
+
+
+
+     function isLoggedIn(){
+
+        if(isset($_SESSION['user_id'])){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
+     function remember($user)
+    {
+        $_SESSION["user_id"]= $user->id;
+
+    }
+
+     function isAdmin(){
+
+        if($_SESSION['user_role'] == 'admin') {
+            return true;
+        }else{
+            return false;
+        }
+    }

@@ -52,10 +52,10 @@
 
                 if(empty($data['email_err']) && empty($data['name_err']) && empty($data['password_err']) && empty($data['confirm_password_err'])){
                     $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-                    if($this->userModel->register($data)){
-                        flash('register_success', 'You are registered and can log in');
-                         redirect('users/login');
-                    }
+                    $this->userModel->register($data);
+                    flash('register_success', 'Now you are registered, please check your email to verify account!');
+                     redirect('users/login');
+
                 }else{
                     $this->view('users/register', $data);
                 }
@@ -74,6 +74,8 @@
                 $this->view('users/register', $data);
             }
         }
+
+
 
         public function login(){
 
@@ -116,7 +118,6 @@
 
                 if(empty($data['email_err']) && empty($data['password_err'])){
                     $loggedInUser = $this->userModel->login($data['email'], $data['password']);
-
                     if($loggedInUser){
                         $this->createUserSession($loggedInUser);
                     }else{
@@ -143,6 +144,7 @@
             $_SESSION['user_id'] = $user->id;
             $_SESSION['user_email'] = $user->email;
             $_SESSION['user_name'] = $user->name;
+            $_SESSION['user_role'] = $user->role;
 
             redirect('pages/index');
         }
@@ -151,27 +153,23 @@
             unset($_SESSION['user_id']);
             unset($_SESSION['user_email']);
             unset($_SESSION['user_name']);
+            unset($_SESSION['user_role']);
             session_destroy();
             redirect('users/login');
         }
 
-        public function isLoggedIn(){
+        public function verify(){
+            $this->userModel->verify();
+            $data = [
+                'email' =>'',
+                'password' => '',
+                'email_err' => '',
+                'password_err' => '',
+            ];
+            flash('register_success', 'Your account has been verified, now you can log in!');
 
-            if(isset($_SESSION['user_id'])){
-                return true;
-            }else{
-                return false;
-            }
-
+            $this->view('users/login',$data );
         }
-
-        public function remember($user)
-        {
-            $_SESSION["user_id"]= $user->id;
-
-
-        }
-
 
 
     }
