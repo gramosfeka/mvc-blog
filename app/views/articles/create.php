@@ -14,12 +14,6 @@
                                value="">
                         <span class="invalid-feedback"><?php echo $data['title_err'] ?></span>
                     </div>
-<!--                    <div class="form-group">-->
-<!--                        <label for="slug">Slug:</label>-->
-<!--                        <input class="form-control --><?php //echo (!empty($data['slug_err'])) ? 'is-invalid' : '' ?><!--" type="text" id="slug" name="slug"-->
-<!--                               value="">-->
-<!--                        <span class="invalid-feedback">--><?php //echo $data['slug_err'] ?><!--</span>-->
-<!--                    </div>-->
 
                     <div class="form-group">
                         <label for="category_id">Category:</label>
@@ -43,14 +37,20 @@
 
                     <div class="form-group">
                         <label for="image">Image:</label>
-                        <input name="image" type="file" class="form-control-file <?php echo (!empty($data['image_err'])) ? 'is-invalid' : '' ?>" id="image">
+                        <input name="image" type="file" class="form-control <?php echo (!empty($data['image_err'])) ? 'is-invalid' : '' ?>" id="image">
                         <span class="invalid-feedback"><?php echo $data['image_err'] ?></span>
                     </div>
+
                     <div class="form-group">
                         <label for="body">Description:</label>
                         <textarea class="form-control <?php echo (!empty($data['body_err'])) ? 'is-invalid' : '' ?>" name="body" id="editor"
                                   rows="10"></textarea>
                         <span class="invalid-feedback"><?php echo $data['body_err'] ?></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date:</label>
+                        <input name="created_at" type="date" class="form-control <?php echo (!empty($data['created_at_err'])) ? 'is-invalid' : '' ?>" id="created_at">
+                        <span class="invalid-feedback"><?php echo $data['created_at_err'] ?></span>
                     </div>
                     <div class="form-group">
                         <input type="submit" value="Submit" class="btn btn-success btn-lg mt-2 btn-block">

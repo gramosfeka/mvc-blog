@@ -29,7 +29,7 @@
 
         public function createArticle($data)
         {
-            $this->db->query('INSERT INTO articles (category_id, title, slug, body, user_id, image) VALUES (:category_id, :title, :slug, :body, :user_id,:image)');
+            $this->db->query('INSERT INTO articles (category_id, title, slug, body, user_id, image, created_at) VALUES (:category_id, :title, :slug, :body, :user_id,:image,:created_at)');
 
             $this->db->bind(':title', $data['title']);
             $this->db->bind(':user_id', $data['user_id']);
@@ -37,6 +37,7 @@
             $this->db->bind(':slug', $data['slug']);
             $this->db->bind(':image', $data['image']);
             $this->db->bind(':body', $data['body']);
+            $this->db->bind(':created_at', $data['created_at']);
 
             if ($this->db->execute()) {
                 return true;
@@ -53,14 +54,10 @@
                 $row = $this->db->single();
 
                 foreach ($data['tags'] as $tag) {
-                    $this->db->query('INSERT INTO article_tag (articles_id, tags_id) VALUES (:articles_id, :tags_id)');
-                    $this->db->bind(':articles_id', $row->id);
-                    $this->db->bind(':tags_id', $tag);
-                    if ($this->db->execute()) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    $this->db->query('INSERT INTO article_tag (article_id, tag_id) VALUES (:article_id, :tag_id)');
+                    $this->db->bind(':article_id', $row->id);
+                    $this->db->bind(':tag_id', $tag);
+                    $this->db->execute();
                 }
 
             }
@@ -68,11 +65,12 @@
 
         public function editArticle($data){
 
-            $this->db->query('UPDATE articles SET title = :title, slug = :slug, category_id = :category_id, body = :body, image = :image WHERE id = :id');
+            $this->db->query('UPDATE articles SET title = :title, slug = :slug, category_id = :category_id, body = :body, image = :image, created_at = :created_at WHERE id = :id');
             $this->db->bind(':title', $data['title']);
             $this->db->bind(':id', $data['id']);
             $this->db->bind(':slug', $data['slug']);
             $this->db->bind(':category_id', $data['category_id']);
+            $this->db->bind(':created_at', $data['created_at']);
             $this->db->bind(':image', $data['image']);
             $this->db->bind(':body', $data['body']);
 
@@ -94,4 +92,17 @@
                 return false;
             }
         }
+
+        public function approve($id){
+            $this->db->query('UPDATE articles SET status = :status WHERE id = :id');
+            $this->db->bind(':status', 1);
+            $this->db->bind(':id', $id);
+
+            if($this->db->execute()){
+                return true;
+            } else {
+                return false;
+            }
+        }
+
     }

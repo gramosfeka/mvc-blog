@@ -20,7 +20,8 @@
                 <th>#</th>
                 <th>Title</th>
                 <th>Body</th>
-                <th>Action</th>
+                <th>Edit</th>
+                <th>Approve</th>
                 </thead>
                 <tbody>
                 <?php foreach ($data['articles'] as $article) : ?>
@@ -29,6 +30,7 @@
                         <td><?php echo $article->title ?></td>
                         <td><?php echo $article->body ?></td>
                         <td><a href="<?php echo URLROOT; ?>/articles/edit/<?php echo $article->id ?>" class="btn btn-default btn-sm">Edit</a></td>
+                        <td><a href="<?php echo URLROOT; ?>/articles/approve/<?php echo $article->id ?>" class="btn btn-default btn-sm">Approve</a></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

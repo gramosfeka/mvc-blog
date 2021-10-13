@@ -1,6 +1,6 @@
 <?php
 
-class Pages extends Controller {
+class Home extends Controller {
     public function __construct(){
 
     }
@@ -11,11 +11,11 @@ class Pages extends Controller {
             'title' => 'Welcome',
 
         ];
-         $this->view('pages/index', $data);
+         $this->view('home/index', $data);
     }
 
     public function about(){
-         $this->view('pages/about');
+         $this->view('home/about');
     }
 
 }

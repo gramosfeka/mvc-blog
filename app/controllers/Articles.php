@@ -22,7 +22,6 @@ class Articles extends Controller{
     public function create(){
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
-
             $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
             $categories = $this->categoryModel->getCategories();
@@ -46,6 +45,7 @@ class Articles extends Controller{
                 'category_id' =>$_POST['category_id'],
 //                'status' =>$_POST['status'],
                 'categories' => $categories,
+                'created_at' => $_POST['created_at'],
                 'tags' => $_POST['tags'],
                 'title_err' => '',
                 'slug_err' => '',
@@ -53,6 +53,7 @@ class Articles extends Controller{
                 'tags_err' => '',
                 'image_err' => '',
                 'body_err' => '',
+                'created_at_err' => '',
 
             ];
 
@@ -72,20 +73,18 @@ class Articles extends Controller{
             if(empty($data['category_id'])){
                 $data['category_err'] = 'Please choose category';
             }
+            if(empty($data['created_at'])){
+                $data['created_at_err'] = 'Please choose date';
+            }
 
             if(empty($data['image'])){
                 $data['image_err'] = 'Please choose image';
             }
-//          if ($data['tags']){
-//              die(var_dump($data['tags']));
-//          }
+
             if(empty($data['title_err']) && empty($data['slug_err']) && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err'])){
                 if($this->articlesModel->createArticle($data)){
 
                   $this->articlesModel->tagsArticle($data);
-
-
-
 
                     flash('articles_message','Article created successfully');
                     redirect('articles/index');
@@ -143,6 +142,7 @@ class Articles extends Controller{
                 'body' => $_POST['body'],
                 'image' => $destination,
                 'category_id' =>$_POST['category_id'],
+                'created_at' => $_POST['created_at'],
 //                'status' =>$_POST['status'],
                 'categories' => $categories,
                 'tags' => $tags,
@@ -172,11 +172,15 @@ class Articles extends Controller{
                 $data['category_err'] = 'Please choose category';
             }
 
+            if(empty($data['created_at'])){
+                $data['created_at_err'] = 'Please choose date';
+            }
+
             if(empty($data['image'])){
                 $data['image_err'] = 'Please choose image';
             }
 
-            if(empty($data['title_err'])  && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err'])){
+            if(empty($data['title_err'])  && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err']) && empty($data['created_at_err'])){
                 if($this->articlesModel->editArticle($data)){
                     flash('articles_message','Article updated successfully');
                     redirect('articles/index');
@@ -197,7 +201,6 @@ class Articles extends Controller{
                 'id' => $id,
                 'title' =>$article->title,
                 'slug' => $article->slug,
-                'body' => $article->body,
                 'body' => $article->body,
                 'categories' => $categories,
                 'tags' => $tags,
@@ -224,6 +227,24 @@ class Articles extends Controller{
             redirect('articles/index');
         }
     }
+
+    public function approve($id){
+
+        $this->articlesModel->approve($id);
+        flash('articles_message', 'Article has been approved');
+
+
+        $articles = $this->articlesModel->getArticles();
+        $data = [
+            'articles' => $articles
+        ];
+        $this->view('articles/index', $data);
+    }
+
+    public function single(){
+        $this->view('articles/single');
+    }
+
 
 
 

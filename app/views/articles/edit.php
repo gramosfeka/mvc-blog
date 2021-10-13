@@ -2,6 +2,11 @@
 
 <div class="row">
     <div class="col-md-8 offset-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>Edit Article</h3>
+            </div>
+            <div class="card-body">
         <form method="POST" enctype="multipart/form-data"
               action="<?php echo URLROOT; ?>/articles/edit/<?php echo $data['id']?>">
 
@@ -11,13 +16,6 @@
                        value="<?php echo $data['title'] ?>">
                 <span class="invalid-feedback"><?php echo $data['title_err'] ?></span>
             </div>
-            <div class="form-group">
-                <label for="slug">Slug:</label>
-                <input class="form-control <?php echo (!empty($data['slug_err'])) ? 'is-invalid' : '' ?>" type="text" id="slug" name="slug"
-                       value="<?php echo $data['slug'] ?>">
-                <span class="invalid-feedback"><?php echo $data['slug_err'] ?></span>
-            </div>
-
             <div class="form-group">
                 <label for="category_id">Category:</label>
                 <select class="form-control <?php echo (!empty($data['category_err'])) ? 'is-invalid' : '' ?>" name="category_id" id="category_id">
@@ -40,7 +38,7 @@
 
             <div class="form-group">
                 <label for="image">Image:</label>
-                <input name="image" type="file" class="form-control-file <?php echo (!empty($data['image_err'])) ? 'is-invalid' : '' ?>" id="image">
+                <input name="image" type="file" class="form-control <?php echo (!empty($data['image_err'])) ? 'is-invalid' : '' ?>" id="image">
                 <span class="invalid-feedback"><?php echo $data['image_err'] ?></span>
             </div>
             <div class="form-group">
@@ -48,6 +46,11 @@
                 <textarea class="form-control <?php echo (!empty($data['body_err'])) ? 'is-invalid' : '' ?>" name="body" id="editor"
                           rows="10"><?php echo $data['body'] ?></textarea>
                 <span class="invalid-feedback"><?php echo $data['body_err'] ?></span>
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input name="created_at" type="date" class="form-control <?php echo (!empty($data['created_at_err'])) ? 'is-invalid' : '' ?>" id="created_at">
+                <span class="invalid-feedback"><?php echo $data['created_at_err'] ?></span>
             </div>
             <div class="row">
                 <div class="col">
@@ -59,6 +62,9 @@
                 <input type="submit" value="Delete" class="btn btn-danger col-12 mt-2">
             </form>
         </div>
+            </div>
+        </div>
+    </div>
     </div>
     </div>
 </div>

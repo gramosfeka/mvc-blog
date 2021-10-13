@@ -21,14 +21,44 @@
 
             if($this->db->execute()){
                 $to      = $data['email'];
-                $subject = 'Hello From Gramos Feka';
-                $message = "Confirm Your Email, Click the link below to verify your account
+                $subject = 'Confirm Email';
+                $message = "Please click the link below to verify your account
                                 http://localhost:8081/mvc-blog/users/verify?hash=$hash";
                 $headers = 'From: gramosfeka@gmail.com';
                 mail($to, $subject, $message, $headers);
             }else{
                 return false;
             }
+        }
+
+        public function send_link($data){
+            $email= md5($data['email']);
+            $to      = $data['email'];
+            $subject = 'Reset Password';
+            $message = "Click On This Link to Reset Password
+                                http://localhost:8081/mvc-blog/users/reset_pass?email=$email";
+            $headers = 'From: gramosfeka@gmail.com';
+            mail($to, $subject, $message, $headers);
+
+        }
+
+         public function reset_pas($data){
+
+             $this->db->query('SELECT * FROM users WHERE md5(email) = :email');
+             $this->db->bind(':email', $data['email']);
+             $user = $this->db->single();
+
+
+             if($this->db->rowCount() > 0){
+
+                 $this->db->query('UPDATE users SET password = :password WHERE email = :email');
+                 $this->db->bind(':email',  $user->email);
+                 $this->db->bind(':password', $data['password']);
+                 $this->db->execute();
+
+             }else{
+                 return false;
+             }
         }
 
 
