@@ -27,6 +27,7 @@ class Articles extends Controller{
             $categories = $this->categoryModel->getCategories();
             $tags = $this->tagModel->getTags();
 
+
             if(isset($_FILES['image']['name']))
             {
                 $folder = "img/";
@@ -34,7 +35,7 @@ class Articles extends Controller{
                 move_uploaded_file($_FILES['image']['tmp_name'], $destination);
             }
 
-            $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title'])));
+            $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title']))) ;
 
             $data = [
                 'title' => $_POST['title'],
@@ -105,7 +106,6 @@ class Articles extends Controller{
                 'title' =>'',
                 'slug' => '',
                 'body' => '',
-                'body' => '',
                 'categories' => $categories,
                 'tags' => $tags,
                 'image' => '',
@@ -135,19 +135,19 @@ class Articles extends Controller{
                 move_uploaded_file($_FILES['image']['tmp_name'], $destination);
             }
 
+            $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title'])));
+
             $data = [
                 'id' => $id,
                 'title' => $_POST['title'],
-                'slug' => $_POST['slug'],
                 'body' => $_POST['body'],
                 'image' => $destination,
                 'category_id' =>$_POST['category_id'],
                 'created_at' => $_POST['created_at'],
-//                'status' =>$_POST['status'],
                 'categories' => $categories,
-                'tags' => $tags,
+                'tags' => $_POST['tags'],
+                'slug' => $slug,
                 'title_err' => '',
-//                'slug_err' => '',
                 'category_err' => '',
                 'tags_err' => '',
                 'image_err' => '',
@@ -160,9 +160,6 @@ class Articles extends Controller{
                 $data['title_err'] = 'Please enter title';
             }
 
-//            if(empty($data['slug'])){
-//                $data['slug_err'] = 'Please enter slug';
-//            }
 
             if(empty($data['body'])){
                 $data['body_err'] = 'Please enter body';
@@ -181,12 +178,11 @@ class Articles extends Controller{
             }
 
             if(empty($data['title_err'])  && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err']) && empty($data['created_at_err'])){
-                if($this->articlesModel->editArticle($data)){
+                    $this->articlesModel->editArticle($data);
+                    $this->articlesModel->editTagsArticle($data);
                     flash('articles_message','Article updated successfully');
                     redirect('articles/index');
-                }else{
-                    die('Something went wrong');
-                }
+
             } else{
                 $this->view('articles/edit', $data);
             }
@@ -241,8 +237,18 @@ class Articles extends Controller{
         $this->view('articles/index', $data);
     }
 
-    public function single(){
-        $this->view('articles/single');
+    public function single($id){
+
+        $article = $this->articlesModel->getArticleById($id);
+        $categories = $this->categoryModel->getCategories();
+        $tags = $this->tagModel->getTagByArticle($id);
+        $data = [
+            'article' => $article,
+            'categories' => $categories,
+            'tags' => $tags
+        ];
+
+        $this->view('articles/single', $data);
     }
 
 

@@ -6,28 +6,29 @@
                     <a href="#" class="list-group-item list-group-item-action active">
                         <i class="fa fa-home"></i> Categories
                     </a>
-
+                    <?php foreach ($data['categories'] as $category) : ?>
                     <a href="#"
                        class="list-group-item list-group-item-action">
-                        <i class="fa fa-home"></i> Category name
+                        <i class="fa fa-home"></i> <?php echo $category->name ?>
                     </a>
+                    <?php endforeach; ?>
 
                 </div>
             </div>
             <div class="row col-md-10">
-
+            <?php foreach ($data['articles'] as $article) : ?>
                 <div id="myTable" class='col-md-4' style="margin-bottom: 20px;">
                     <div class='panel panel-info'>
 
                         <div class='panel-body'>
-                            <img src="#" style="width: 250px;height: 300px; margin-bottom: 10px;">
-                            <h4>Post title</h4>
-                            <p>Post body</p>
-                            <a href="#" class="btn btn-primary">Read More</a>
+                            <img src="<?php echo URLROOT; ?>/<?php echo $article->image ?> " style="width: 250px;height: 300px; margin-bottom: 10px;">
+                            <h4><?php echo $article->title?></h4>
+                            <p><?php echo $article->body?></p>
+                            <a href="<?php echo URLROOT; ?>/articles/single/<?php echo $article->id ?>" class="btn btn-primary">Read More</a>
                         </div>
                     </div>
                 </div>
-
+            <?php endforeach; ?>
             </div>
 
         </div>

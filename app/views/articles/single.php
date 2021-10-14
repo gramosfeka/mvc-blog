@@ -2,16 +2,26 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 mx-auto">
-                <h1>Post title</h1>
-                <img src="#" style="width: 450px;height: 400px;">
-                <p class="lead">Post body</p>
+
+                <img src="<?php echo URLROOT; ?>/<?php echo $data['article']->image ?> " style="width: 450px;height: 400px;">
+                <h1><?php echo $data['article']->title?></h1>
+                <p class="lead"><?php echo$data['article']->body?></p>
                 <hr>
-                <p>Category: Category name</p>
+
+                    <?php  foreach ( $data['categories'] as $category): ?>
+                    <?php if( $data['article']->category_id == $category->id) :?>
+                    <p>Category: <?php echo $category->name?></p>
+                        <?php endif; ?>
+
+                    <?php endforeach ;?>
                 <hr>
                 Tags:
 
-                <span class="badge badge-secondary">{{$tag->name}}</span>
-
+                <?php foreach ($data['tags'] as $tag) : ?>
+                    <button type="button" class="btn btn-secondary  btn-sm ">
+                        <?php echo $tag->name ?>
+                    </button>
+                <?php endforeach; ?>
             </div>
 
         </div>

@@ -67,4 +67,26 @@ class Tag{
         return $row;
     }
 
+
+    public function getTagByArticle($id){
+        $this->db->query("SELECT tag_id FROM article_tag WHERE article_id = :id");
+        $this->db->bind(':id', $id);
+        $tagsIds = $this->db->resultSetASSOC();
+
+
+        $this->db->query("SELECT * FROM tags");
+        $tags = $this->db->resultSetASSOC();
+
+        foreach ($tagsIds as $Tid){
+            foreach ($tags as $tag){
+                if(in_array($tag['id'], $Tid)){
+                     die('asasd');
+                }
+            }
+        }
+
+    }
+
+
+
 }

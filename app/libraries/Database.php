@@ -62,6 +62,11 @@
             return $this->stm->fetchAll(PDO::FETCH_OBJ);
         }
 
+        public function resultSetASSOC(){
+            $this->execute();
+            return $this->stm->fetchAll(PDO::FETCH_ASSOC);
+        }
+
         public function single(){
             $this->execute();
 

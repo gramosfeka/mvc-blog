@@ -33,7 +33,7 @@
                     <th scope="row"><?php echo $category->id ?></th>
                     <td><?php echo $category->name ?></td>
                     <td><?php echo $category->created_at ?></td>
-                    <td><a href="<?php echo URLROOT; ?>/categories/edit/<?php echo $category->id ?>"
+                    <td><a href="<?php echo URLROOT; ?>/img/edit/<?php echo $category->id ?>"
                            class="btn btn-light btn-sm m-1">Edit</a></td>
 
                 </tr>

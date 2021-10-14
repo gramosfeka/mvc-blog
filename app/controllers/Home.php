@@ -2,13 +2,18 @@
 
 class Home extends Controller {
     public function __construct(){
-
+        $this->articlesModel = $this->model('Article');
+        $this->categoryModel = $this->model('Category');
     }
 
     public function index(){
 
+        $articles = $this->articlesModel->getArticles();
+        $categories = $this->categoryModel->getCategories();
+
         $data = [
-            'title' => 'Welcome',
+            'articles' => $articles,
+            'categories' => $categories,
 
         ];
          $this->view('home/index', $data);

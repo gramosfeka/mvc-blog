@@ -8,6 +8,7 @@
             <div class="card-body">
 
                 <form method="POST" enctype="multipart/form-data" action="<?php echo URLROOT ?>/articles/create">
+
                     <div class="form-group">
                         <label for="title">Title:</label>
                         <input class="form-control  <?php echo (!empty($data['title_err'])) ? 'is-invalid' : '' ?>" type="text" id="title" name="title"
