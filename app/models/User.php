@@ -110,5 +110,14 @@
         }
 
 
+        public function getUsers(){
+            $this->db->query("SELECT * FROM users");
+
+            $results = $this->db->resultset();
+
+            return $results;
+        }
+
+
 
     }

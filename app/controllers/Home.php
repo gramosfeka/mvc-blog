@@ -1,14 +1,19 @@
 <?php
 
-class Home extends Controller {
-    public function __construct(){
+class Home extends Controller
+{
+    public function __construct()
+    {
+
         $this->articlesModel = $this->model('Article');
+
         $this->categoryModel = $this->model('Category');
     }
 
-    public function index(){
+    public function index()
+    {
 
-        $articles = $this->articlesModel->getArticles();
+        $articles = $this->articlesModel->getArticlesApproved();
         $categories = $this->categoryModel->getCategories();
 
         $data = [
@@ -16,11 +21,20 @@ class Home extends Controller {
             'categories' => $categories,
 
         ];
-         $this->view('home/index', $data);
+        $this->view('home/index', $data);
     }
 
-    public function about(){
-         $this->view('home/about');
+    public function about()
+    {
+        $this->view('home/about');
     }
+
+
+    public function db()
+    {
+        $this->view('home/about');
+    }
+
+
 
 }

@@ -20,12 +20,18 @@
         </div>
     </div>
     <div class="col-md-6 offset-md-2">
+        <?php if (empty($data['tags'])) :?>
+            <h2 class="text-center"> <?php echo "No data found"; ?></h2>
+
+        <?php  else: ?>
         <table class="table">
             <thead>
-            <th>#</th>
-            <th>Name</th>
-            <th>Created At</th>
-            <th>Edit</th>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Created At</th>
+                <th>Edit</th>
+            </tr>
             </thead>
             <tbody>
             <?php foreach ($data['tags'] as $tag) : ?>
@@ -40,6 +46,7 @@
             <?php endforeach; ?>
             </tbody>
         </table>
+         <?php  endif; ?>
     </div>
 
 </div>

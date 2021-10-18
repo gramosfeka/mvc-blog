@@ -7,7 +7,7 @@
                         <i class="fa fa-home"></i> Categories
                     </a>
                     <?php foreach ($data['categories'] as $category) : ?>
-                    <a href="#"
+                    <a href="<?php echo URLROOT; ?>/articles/getArticlesByCategory/<?php echo $category->id ?>"
                        class="list-group-item list-group-item-action">
                         <i class="fa fa-home"></i> <?php echo $category->name ?>
                     </a>
@@ -23,7 +23,7 @@
                         <div class='panel-body'>
                             <img src="<?php echo URLROOT; ?>/<?php echo $article->image ?> " style="width: 250px;height: 300px; margin-bottom: 10px;">
                             <h4><?php echo $article->title?></h4>
-                            <p><?php echo $article->body?></p>
+                            <p><?php echo substr(strip_tags($article->body), 0, 50), strlen($article->body) > 50 ? "..." : ""  ?></p>
                             <a href="<?php echo URLROOT; ?>/articles/single/<?php echo $article->id ?>" class="btn btn-primary">Read More</a>
                         </div>
                     </div>

@@ -5,7 +5,7 @@ class Tags extends Controller
     public function __construct()
     {
 
-        if(!isAdmin()){
+        if (!isAdmin()) {
             redirect('home');
         }
         $this->tagModel = $this->model('Tag');
@@ -103,13 +103,14 @@ class Tags extends Controller
         $this->view('tags/edit', $data);
     }
 
-    public function delete($id){
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    public function delete($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-            if($this->tagModel->deleteTag($id)){
+            if ($this->tagModel->deleteTag($id)) {
                 flash('tag_success', 'Tag has been removed');
                 redirect('tags');
-            }else{
+            } else {
                 die('Something went wrong');
             }
         } else {

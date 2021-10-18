@@ -7,25 +7,32 @@
                 <h1><?php echo $data['article']->title?></h1>
                 <p class="lead"><?php echo$data['article']->body?></p>
                 <hr>
-
-                    <?php  foreach ( $data['categories'] as $category): ?>
-                    <?php if( $data['article']->category_id == $category->id) :?>
-                    <p>Category: <?php echo $category->name?></p>
+                <?php  foreach ( $data['users'] as $user): ?>
+                     <?php if( $data['article']->user_id == $user->id) :?>
+                        <p>Author: <?php echo $user->name?></p>
                         <?php endif; ?>
+                <?php endforeach ;?>
 
-                    <?php endforeach ;?>
-                <hr>
+
+                <?php  foreach ( $data['categories'] as $category): ?>
+                    <?php if( $data['article']->category_id == $category->id) :?>
+                <p>Category: <?php echo $category->name ?></p>
+                    <?php endif; ?>
+
+                <?php endforeach ;?>
+
+                <p>Published date: <?php echo $data['article']->created_at?></p>
+
                 Tags:
 
                 <?php foreach ($data['tags'] as $tag) : ?>
                     <button type="button" class="btn btn-secondary  btn-sm ">
-                        <?php echo $tag->name ?>
+                    <?php echo $tag ?>
                     </button>
                 <?php endforeach; ?>
             </div>
 
         </div>
-
     </div>
 
 <?php require APPROOT . '/views/inc/footer.php'?>

@@ -77,14 +77,15 @@ class Tag{
         $this->db->query("SELECT * FROM tags");
         $tags = $this->db->resultSetASSOC();
 
-        foreach ($tagsIds as $Tid){
-            foreach ($tags as $tag){
-                if(in_array($tag['id'], $Tid)){
-                     die('asasd');
+        foreach ($tags as $tag){
+            foreach ($tagsIds as $tId){
+                if(in_array($tag['id'], $tId)){
+                    $tagNames[] = $tag['name'];
+
                 }
             }
         }
-
+        return $tagNames;
     }
 
 

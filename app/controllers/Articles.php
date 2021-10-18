@@ -1,26 +1,36 @@
 <?php
 
-class Articles extends Controller{
+class Articles extends Controller
+{
     public function __construct()
     {
         $this->articlesModel = $this->model('Article');
         $this->categoryModel = $this->model('Category');
         $this->tagModel = $this->model('Tag');
+        $this->userModel = $this->model('User');
 
     }
 
-    public function index(){
+    public function index()
+    {
 
-        $articles = $this->articlesModel->getArticles();
+        if (isAdmin()) {
+            $articles = $this->articlesModel->getArticlesNotApproved();
+        } else {
+            $articles = $this->articlesModel->getArticles();
+        }
+
+
         $data = [
             'articles' => $articles
         ];
 
-        $this->view('articles/index',$data);
+        $this->view('articles/index', $data);
     }
 
-    public function create(){
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    public function create()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
@@ -28,22 +38,21 @@ class Articles extends Controller{
             $tags = $this->tagModel->getTags();
 
 
-            if(isset($_FILES['image']['name']))
-            {
+            if (isset($_FILES['image']['name'])) {
                 $folder = "img/";
                 $destination = $folder . $_FILES['image']['name'];
                 move_uploaded_file($_FILES['image']['tmp_name'], $destination);
             }
 
-            $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title']))) ;
+            $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title'])));
 
             $data = [
                 'title' => $_POST['title'],
                 'slug' => $slug,
                 'body' => $_POST['body'],
                 'image' => $destination,
-                'user_id' =>$_SESSION['user_id'],
-                'category_id' =>$_POST['category_id'],
+                'user_id' => $_SESSION['user_id'],
+                'category_id' => $_POST['category_id'],
 //                'status' =>$_POST['status'],
                 'categories' => $categories,
                 'created_at' => $_POST['created_at'],
@@ -59,58 +68,57 @@ class Articles extends Controller{
             ];
 
 
-            if(empty($data['title'])){
+            if (empty($data['title'])) {
                 $data['title_err'] = 'Please enter title';
             }
 
-            if(empty($data['slug'])){
+            if (empty($data['slug'])) {
                 $data['slug_err'] = 'Please enter slug';
             }
 
-            if(empty($data['body'])){
+            if (empty($data['body'])) {
                 $data['body_err'] = 'Please enter body';
             }
 
-            if(empty($data['category_id'])){
+            if (empty($data['category_id'])) {
                 $data['category_err'] = 'Please choose category';
             }
-            if(empty($data['created_at'])){
+            if (empty($data['created_at'])) {
                 $data['created_at_err'] = 'Please choose date';
             }
 
-            if(empty($data['image'])){
+            if (empty($data['image'])) {
                 $data['image_err'] = 'Please choose image';
             }
 
-            if(empty($data['title_err']) && empty($data['slug_err']) && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err'])){
-                if($this->articlesModel->createArticle($data)){
+            if (empty($data['title_err']) && empty($data['slug_err']) && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err'])) {
+                if ($this->articlesModel->createArticle($data)) {
 
-                  $this->articlesModel->tagsArticle($data);
+                    $this->articlesModel->tagsArticle($data);
 
-                    flash('articles_message','Article created successfully');
+                    flash('articles_message', 'Article created successfully');
                     redirect('articles/index');
 
-                }else{
+                } else {
                     die('Something went wrong');
                 }
-            } else{
+            } else {
                 $this->view('articles/create', $data);
             }
 
-
-        }else{
+        } else {
             $categories = $this->categoryModel->getCategories();
             $tags = $this->tagModel->getTags();
 
             $data = [
-                'title' =>'',
+                'title' => '',
                 'slug' => '',
                 'body' => '',
                 'categories' => $categories,
                 'tags' => $tags,
                 'image' => '',
-                'user_id' =>'',
-                'status' =>'',
+                'user_id' => '',
+                'status' => '',
 
             ];
 
@@ -119,17 +127,17 @@ class Articles extends Controller{
 
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
 
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
             $categories = $this->categoryModel->getCategories();
             $tags = $this->tagModel->getTags();
 
-            if(isset($_FILES['image']['name']))
-            {
+            if (isset($_FILES['image']['name'])) {
                 $folder = "img/";
                 $destination = $folder . $_FILES['image']['name'];
                 move_uploaded_file($_FILES['image']['tmp_name'], $destination);
@@ -142,7 +150,7 @@ class Articles extends Controller{
                 'title' => $_POST['title'],
                 'body' => $_POST['body'],
                 'image' => $destination,
-                'category_id' =>$_POST['category_id'],
+                'category_id' => $_POST['category_id'],
                 'created_at' => $_POST['created_at'],
                 'categories' => $categories,
                 'tags' => $_POST['tags'],
@@ -156,53 +164,53 @@ class Articles extends Controller{
             ];
 
 
-            if(empty($data['title'])){
+            if (empty($data['title'])) {
                 $data['title_err'] = 'Please enter title';
             }
 
 
-            if(empty($data['body'])){
+            if (empty($data['body'])) {
                 $data['body_err'] = 'Please enter body';
             }
 
-            if(empty($data['category_id'])){
+            if (empty($data['category_id'])) {
                 $data['category_err'] = 'Please choose category';
             }
 
-            if(empty($data['created_at'])){
+            if (empty($data['created_at'])) {
                 $data['created_at_err'] = 'Please choose date';
             }
 
-            if(empty($data['image'])){
+            if (empty($data['image'])) {
                 $data['image_err'] = 'Please choose image';
             }
 
-            if(empty($data['title_err'])  && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err']) && empty($data['created_at_err'])){
-                    $this->articlesModel->editArticle($data);
-                    $this->articlesModel->editTagsArticle($data);
-                    flash('articles_message','Article updated successfully');
-                    redirect('articles/index');
+            if (empty($data['title_err']) && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err']) && empty($data['created_at_err'])) {
+                $this->articlesModel->editArticle($data);
+                $this->articlesModel->editTagsArticle($data);
+                flash('articles_message', 'Article updated successfully');
+                redirect('articles/index');
 
-            } else{
+            } else {
                 $this->view('articles/edit', $data);
             }
 
 
-        }else{
+        } else {
             $categories = $this->categoryModel->getCategories();
             $tags = $this->tagModel->getTags();
             $article = $this->articlesModel->getArticleById($id);
 
             $data = [
                 'id' => $id,
-                'title' =>$article->title,
+                'title' => $article->title,
                 'slug' => $article->slug,
                 'body' => $article->body,
                 'categories' => $categories,
                 'tags' => $tags,
                 'image' => '',
-                'user_id' =>'',
-                'status' =>'',
+                'user_id' => '',
+                'status' => '',
 
             ];
 
@@ -210,13 +218,14 @@ class Articles extends Controller{
         }
     }
 
-    public function delete($id){
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    public function delete($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-            if($this->articlesModel->deleteArticle($id)){
+            if ($this->articlesModel->deleteArticle($id)) {
                 flash('articles_message', 'Article Removed');
                 redirect('articles/index');
-            }else{
+            } else {
                 die('Something went wrong');
             }
         } else {
@@ -224,35 +233,56 @@ class Articles extends Controller{
         }
     }
 
-    public function approve($id){
+    public function approve($id)
+    {
+
+        if (!isAdmin()) {
+            redirect('home/index');
+        }
 
         $this->articlesModel->approve($id);
         flash('articles_message', 'Article has been approved');
 
-
-        $articles = $this->articlesModel->getArticles();
-        $data = [
-            'articles' => $articles
-        ];
-        $this->view('articles/index', $data);
+        redirect('articles/index');
     }
 
-    public function single($id){
+    public function single($id)
+    {
 
         $article = $this->articlesModel->getArticleById($id);
         $categories = $this->categoryModel->getCategories();
+        $users = $this->userModel->getUsers();
         $tags = $this->tagModel->getTagByArticle($id);
         $data = [
             'article' => $article,
             'categories' => $categories,
-            'tags' => $tags
+            'tags' => $tags,
+            'users' => $users
         ];
 
         $this->view('articles/single', $data);
     }
 
+    public function getArticlesByCategory($category)
+    {
+
+        $articles = $this->articlesModel->getArticlesByCategory($category);
+
+        $categories = $this->categoryModel->getCategories();
+
+        $data = [
+            'articles' => $articles,
+            'categories' => $categories,
+
+        ];
+        $this->view('home/index', $data);
+
+    }
 
 
+    public function positions(){
+        $this->articlesModel->positions();
+    }
 
 
 }

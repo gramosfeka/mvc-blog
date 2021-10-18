@@ -2,6 +2,11 @@
 
 class Controller {
 
+    public function __construct(Database $db)
+    {
+        $db->migrate();
+    }
+
     public function model($model){
       require_once '../app/models/'. $model . '.php';
 

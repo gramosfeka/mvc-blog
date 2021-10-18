@@ -5,7 +5,7 @@ class Categories extends Controller
     public function __construct()
     {
 
-        if(!isAdmin()){
+        if (!isAdmin()) {
             redirect('home');
         }
         $this->categoryModel = $this->model('Category');
@@ -103,13 +103,14 @@ class Categories extends Controller
         $this->view('categories/edit', $data);
     }
 
-    public function delete($id){
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    public function delete($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-            if($this->categoryModel->deleteCategory($id)){
+            if ($this->categoryModel->deleteCategory($id)) {
                 flash('category_success', 'Category has been removed');
                 redirect('categories');
-            }else{
+            } else {
                 die('Something went wrong');
             }
         } else {
