@@ -2,8 +2,12 @@
 
 class Home extends Controller
 {
+    private $db;
+    private $seeders;
     public function __construct()
     {
+        $this->db = new Database();
+        $this->seeders = new Seeders();
 
         $this->articlesModel = $this->model('Article');
 
@@ -24,16 +28,19 @@ class Home extends Controller
         $this->view('home/index', $data);
     }
 
-    public function about()
-    {
-        $this->view('home/about');
-    }
+
+    public function migration(){
+        $this->db->migrate();
 
 
-    public function db()
-    {
-        $this->view('home/about');
+        redirect('home/index');
     }
+
+    public function seeder(){
+        $this->seeders->seeder();
+
+            redirect('home/index');
+        }
 
 
 

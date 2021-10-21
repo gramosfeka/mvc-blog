@@ -25,11 +25,7 @@
                     <th>#</th>
                     <th>Title</th>
                     <th>Body</th>
-                    <th>Edit</th>
-
-                    <?php if((isAdmin())) : ?>
-                        <th>Approve</th>
-                    <?php endif; ?>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody class="row_position">
@@ -41,11 +37,12 @@
 
                             <td><?php echo substr(strip_tags($article->body), 0, 50), strlen($article->body) > 50 ? "..." : ""  ?></td>
 
-
-                            <td><a href="<?php echo URLROOT; ?>/articles/edit/<?php echo $article->id ?>" target='_blank' class="edit btn btn-default btn-sm">Edit</a></td>
                             <?php if((isAdmin())) : ?>
                                 <td><a href="<?php echo URLROOT; ?>/articles/approve/<?php echo $article->id ?>"  class="btn btn-default btn-sm">Approve</a></td>
-                            <?php endif; ?>
+                            <?php else: ?>
+
+                            <td><a href="<?php echo URLROOT; ?>/articles/edit/<?php echo $article->id ?>" target='_blank' class="edit btn btn-default btn-sm">Edit</a></td>
+                            <?php endif;?>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -5,7 +5,7 @@
                 <?php flash('register_success'); ?>
                 <?php flash('reset_pass'); ?>
                 <h2>Login</h2>
-                <form action="<?php echo URLROOT; ?>/users/login" method="POST">
+                <form action="<?php echo URLROOT; ?>/users/loginUser" method="POST">
                     <div class="form-group">
                         <label for="email">Email:</label>
                         <input type="email" name="email" class="form-control form-control-lg
@@ -36,7 +36,7 @@
                         <div class="row">
 
                             <div class="col">
-                                <a href="<?php echo URLROOT ?>/users/send_link" class="btn btn-link col-12 mt-2">Forogt Password?</a>
+                                <a href="<?php echo URLROOT ?>/users/send_link_form" class="btn btn-link col-12 mt-2">Forogt Password?</a>
                             </div>
 
                         </div>

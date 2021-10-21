@@ -5,13 +5,13 @@
         <div>
             <?php flash('tag_success'); ?>
             <h2>New Tag</h2>
-            <form method="POST" action="<?php echo URLROOT; ?>/tags/add">
+            <form method="POST" action="<?php echo URLROOT; ?>/tags/store">
                 <div class="form-group">
                     <label for="name">Name:</label>
                     <input type="text" name="name"
-                           class="form-control <?php echo (!empty($data['name_err'])) ? 'is-invalid' : '' ?>"
+                           class="form-control <?php echo (!empty($data['errors']['name_err'])) ? 'is-invalid' : '' ?>"
                            value="<?php echo $data['name'] ?>">
-                    <span class="invalid-feedback"><?php echo $data['name_err'] ?></span>
+                    <span class="invalid-feedback"><?php echo $data['errors']['name_err'] ?></span>
                 </div>
                 <div class="col">
                     <input type="submit" value="Create new Tag" class="btn btn-primary col-12 mt-2">

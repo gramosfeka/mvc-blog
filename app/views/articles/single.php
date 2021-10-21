@@ -23,13 +23,15 @@
 
                 <p>Published date: <?php echo $data['article']->created_at?></p>
 
-                Tags:
+               <p class="mb-4"> Tags:
 
                 <?php foreach ($data['tags'] as $tag) : ?>
                     <button type="button" class="btn btn-secondary  btn-sm ">
                     <?php echo $tag ?>
                     </button>
                 <?php endforeach; ?>
+
+               </p>
             </div>
 
         </div>

@@ -9,7 +9,6 @@ class Core{
     public function __construct()
     {
         $url = $this->getUrl();
-//        print_r($this->getUrl());
 
         if (isset($url[0]) && $url[0] != 'home.php') {
             if(file_exists('../app/controllers/'. ucwords($url[0]). '.php')){

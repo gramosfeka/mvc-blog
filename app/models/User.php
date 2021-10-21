@@ -36,7 +36,7 @@
             $to      = $data['email'];
             $subject = 'Reset Password';
             $message = "Click On This Link to Reset Password
-                                http://localhost:8081/mvc-blog/users/reset_pass?email=$email";
+                                http://localhost:8081/mvc-blog/users/reset_pass_form?email=$email";
             $headers = 'From: gramosfeka@gmail.com';
             mail($to, $subject, $message, $headers);
 
@@ -81,6 +81,7 @@
 
         public function login($email, $password){
             $this->db->query('SELECT * FROM users WHERE email = :email');
+            $this->db->bind(':email', $email);
             $this->db->bind(':email', $email);
 
             $row = $this->db->single();

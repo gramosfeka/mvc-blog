@@ -2,9 +2,9 @@
 
 class Controller {
 
-    public function __construct(Database $db)
+    public function __construct()
     {
-        $db->migrate();
+
     }
 
     public function model($model){
@@ -21,5 +21,13 @@ class Controller {
             die('View does not exist');
         }
     }
+
+
+
+
+
+
+
+
 
 }

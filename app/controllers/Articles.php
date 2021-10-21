@@ -1,4 +1,5 @@
 <?php
+require_once '../app/requests/ArticleRequest.php';
 
 class Articles extends Controller
 {
@@ -8,18 +9,18 @@ class Articles extends Controller
         $this->categoryModel = $this->model('Category');
         $this->tagModel = $this->model('Tag');
         $this->userModel = $this->model('User');
+        $this->articleRequest = new ArticleRequest();
+
 
     }
 
     public function index()
     {
-
         if (isAdmin()) {
             $articles = $this->articlesModel->getArticlesNotApproved();
         } else {
             $articles = $this->articlesModel->getArticles();
         }
-
 
         $data = [
             'articles' => $articles
@@ -30,212 +31,167 @@ class Articles extends Controller
 
     public function create()
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+        $categories = $this->categoryModel->getCategories();
+        $tags = $this->tagModel->getTags();
 
-            $categories = $this->categoryModel->getCategories();
-            $tags = $this->tagModel->getTags();
+        $data = [
+            'title' =>'',
+            'slug' => '',
+            'body' => '',
+            'created_at' => '',
+            'categories' => $categories,
+            'tags' => $tags,
+            'date'=>'',
+            'image' => '',
+            'user_id' =>'',
+            'status' =>'',
 
-
-            if (isset($_FILES['image']['name'])) {
-                $folder = "img/";
-                $destination = $folder . $_FILES['image']['name'];
-                move_uploaded_file($_FILES['image']['tmp_name'], $destination);
-            }
-
-            $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title'])));
-
-            $data = [
-                'title' => $_POST['title'],
-                'slug' => $slug,
-                'body' => $_POST['body'],
-                'image' => $destination,
-                'user_id' => $_SESSION['user_id'],
-                'category_id' => $_POST['category_id'],
-//                'status' =>$_POST['status'],
-                'categories' => $categories,
-                'created_at' => $_POST['created_at'],
-                'tags' => $_POST['tags'],
-                'title_err' => '',
-                'slug_err' => '',
-                'category_err' => '',
-                'tags_err' => '',
-                'image_err' => '',
-                'body_err' => '',
-                'created_at_err' => '',
-
-            ];
+        ];
+        $this->view('articles/create', $data);
 
 
-            if (empty($data['title'])) {
-                $data['title_err'] = 'Please enter title';
-            }
+    }
 
-            if (empty($data['slug'])) {
-                $data['slug_err'] = 'Please enter slug';
-            }
 
-            if (empty($data['body'])) {
-                $data['body_err'] = 'Please enter body';
-            }
+    public function store(){
+        $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
-            if (empty($data['category_id'])) {
-                $data['category_err'] = 'Please choose category';
-            }
-            if (empty($data['created_at'])) {
-                $data['created_at_err'] = 'Please choose date';
-            }
+        $categories = $this->categoryModel->getCategories();
+        $tags = $this->tagModel->getTags();
 
-            if (empty($data['image'])) {
-                $data['image_err'] = 'Please choose image';
-            }
 
-            if (empty($data['title_err']) && empty($data['slug_err']) && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err'])) {
-                if ($this->articlesModel->createArticle($data)) {
-
-                    $this->articlesModel->tagsArticle($data);
-
-                    flash('articles_message', 'Article created successfully');
-                    redirect('articles/index');
-
-                } else {
-                    die('Something went wrong');
-                }
-            } else {
-                $this->view('articles/create', $data);
-            }
-
-        } else {
-            $categories = $this->categoryModel->getCategories();
-            $tags = $this->tagModel->getTags();
-
-            $data = [
-                'title' => '',
-                'slug' => '',
-                'body' => '',
-                'categories' => $categories,
-                'tags' => $tags,
-                'image' => '',
-                'user_id' => '',
-                'status' => '',
-
-            ];
-
-            $this->view('articles/create', $data);
+        if (isset($_FILES['image']['name'])) {
+            $folder = "img/";
+            $destination = $folder . $_FILES['image']['name'];
+            move_uploaded_file($_FILES['image']['tmp_name'], $destination);
         }
 
+        $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title'])));
+
+        $data = [
+            'title' => $_POST['title'],
+            'body' => $_POST['body'],
+            'slug' => $slug,
+            'image' => $destination,
+            'user_id' => $_SESSION['user_id'],
+            'category_id' => $_POST['category_id'],
+            'categories' => $categories,
+            'created_at' => $_POST['created_at'],
+            'tags' => $tags ,
+            'selectedTags' => $_POST['tags'],
+            'title_err' => '',
+            'category_err' => '',
+            'tags_err' => '',
+            'image_err' => '',
+            'body_err' => '',
+            'created_at_err' => '',
+
+        ];
+
+        $data = $this->articleRequest->ValidationForm($data);
+
+        if(!empty($data['errors'])){
+            $this->view('articles/create', $data);
+        } else{
+
+            $this->articlesModel->createArticle($data);
+            $this->articlesModel->tagsArticle($data);
+            flash('articles_message','Article created successfully!');
+            redirect('articles/index');
+        }
     }
 
     public function edit($id)
     {
+        $categories = $this->categoryModel->getCategories();
+        $tags = $this->tagModel->getTags();
+        $article = $this->articlesModel->getArticleById($id);
+        $articleTags = $this->tagModel->getTagByArticle($id);
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-
-            $categories = $this->categoryModel->getCategories();
-            $tags = $this->tagModel->getTags();
-
-            if (isset($_FILES['image']['name'])) {
-                $folder = "img/";
-                $destination = $folder . $_FILES['image']['name'];
-                move_uploaded_file($_FILES['image']['tmp_name'], $destination);
-            }
-
-            $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title'])));
-
-            $data = [
-                'id' => $id,
-                'title' => $_POST['title'],
-                'body' => $_POST['body'],
-                'image' => $destination,
-                'category_id' => $_POST['category_id'],
-                'created_at' => $_POST['created_at'],
-                'categories' => $categories,
-                'tags' => $_POST['tags'],
-                'slug' => $slug,
-                'title_err' => '',
-                'category_err' => '',
-                'tags_err' => '',
-                'image_err' => '',
-                'body_err' => '',
-
-            ];
-
-
-            if (empty($data['title'])) {
-                $data['title_err'] = 'Please enter title';
-            }
-
-
-            if (empty($data['body'])) {
-                $data['body_err'] = 'Please enter body';
-            }
-
-            if (empty($data['category_id'])) {
-                $data['category_err'] = 'Please choose category';
-            }
-
-            if (empty($data['created_at'])) {
-                $data['created_at_err'] = 'Please choose date';
-            }
-
-            if (empty($data['image'])) {
-                $data['image_err'] = 'Please choose image';
-            }
-
-            if (empty($data['title_err']) && empty($data['body_err']) && empty($data['category_err']) && empty($data['tags_err']) && empty($data['image_err']) && empty($data['created_at_err'])) {
-                $this->articlesModel->editArticle($data);
-                $this->articlesModel->editTagsArticle($data);
-                flash('articles_message', 'Article updated successfully');
-                redirect('articles/index');
-
-            } else {
-                $this->view('articles/edit', $data);
-            }
-
-
-        } else {
-            $categories = $this->categoryModel->getCategories();
-            $tags = $this->tagModel->getTags();
-            $article = $this->articlesModel->getArticleById($id);
-
-            $data = [
-                'id' => $id,
+        $data = [
+                'id' => $article->id,
                 'title' => $article->title,
                 'slug' => $article->slug,
                 'body' => $article->body,
                 'categories' => $categories,
+                'articleTags' => $articleTags,
+                'article' => $article,
+                'created_at' => $article->created_at,
                 'tags' => $tags,
                 'image' => '',
                 'user_id' => '',
-                'status' => '',
 
             ];
 
             $this->view('articles/edit', $data);
+
+    }
+
+    public function update($id){
+        $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
+        $categories = $this->categoryModel->getCategories();
+        $tags = $this->tagModel->getTags();
+        $article = $this->articlesModel->getArticleById($id);
+
+        $articleTags = $this->tagModel->getTagByArticle($id);
+
+        if (isset($_FILES['image']['name'])) {
+            $folder = "img/";
+            $destination = $folder . $_FILES['image']['name'];
+            move_uploaded_file($_FILES['image']['tmp_name'], $destination);
+        }
+
+        $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title'])));
+
+        $data = [
+            'id' => $article->id,
+            'title' => $_POST['title'],
+            'body' => $_POST['body'],
+            'image' => $destination,
+            'category_id' => $_POST['category_id'],
+            'created_at' => $_POST['created_at'],
+            'categories' => $categories,
+            'article' => $article,
+            'tags' =>  $tags,
+            'selectedTags' => $_POST['tags'],
+            'slug' => $slug,
+            'articleTags' => $articleTags,
+            'title_err' => '',
+            'category_err' => '',
+            'tags_err' => '',
+            'image_err' => '',
+            'body_err' => '',
+
+        ];
+
+        $data = $this->articleRequest->ValidationForm($data);
+
+        if(!empty($data['errors'])){
+            $this->view('articles/edit', $data);
+        } else{
+            $this->articlesModel->editArticle($data);
+            $this->articlesModel->editTagsArticle($data);
+            flash('articles_message', 'Article updated successfully');
+            redirect('articles/index');
+
         }
     }
 
     public function delete($id)
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-            if ($this->articlesModel->deleteArticle($id)) {
-                flash('articles_message', 'Article Removed');
-                redirect('articles/index');
-            } else {
-                die('Something went wrong');
-            }
-        } else {
+        if ($this->articlesModel->deleteArticle($id)) {
+            flash('articles_message', 'Article Removed');
             redirect('articles/index');
+        } else {
+            die('Something went wrong');
         }
+
     }
 
     public function approve($id)
     {
-
         if (!isAdmin()) {
             redirect('home/index');
         }
@@ -265,9 +221,7 @@ class Articles extends Controller
 
     public function getArticlesByCategory($category)
     {
-
         $articles = $this->articlesModel->getArticlesByCategory($category);
-
         $categories = $this->categoryModel->getCategories();
 
         $data = [

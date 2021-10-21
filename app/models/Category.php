@@ -9,8 +9,7 @@
 
         public function addCategory($data){
 
-            $this->db->query('INSERT INTO categories(id, name, created_at) VALUES (:id,:name,:created_at)');
-            $this->db->bind(':id', $data['id']);
+            $this->db->query('INSERT INTO categories( name, created_at) VALUES (:name,:created_at)');
             $this->db->bind(':created_at', $data['created_at']);
             $this->db->bind(':name',$data['name']);
             if($this->db->execute()){

@@ -1,4 +1,5 @@
 <?php
+require_once '../app/requests/UserRequest.php';
 
 class Users extends Controller
 {
@@ -6,141 +7,106 @@ class Users extends Controller
     public function __construct()
     {
         $this->userModel = $this->model('User');
+        $this->userRequest = new UserRequest();
+
     }
 
-    public function register()
+    public function register(){
+        $data = [
+            'name' => '',
+            'email' => '',
+            'password' => '',
+            'confirm_password' => '',
+            'name_err' => '',
+            'email_err' => '',
+            'password_err' => '',
+            'confirm_password_err' => ''
+        ];
+        $this->view('users/register', $data);
+    }
+
+    public function registerUser()
     {
+        $data = [
+            'name' => rtrim($_POST['name']),
+            'email' => rtrim($_POST['email']),
+            'password' => rtrim($_POST['password']),
+            'confirm_password' => rtrim($_POST['confirm_password']),
+            'created_at' => date('Y-m-d H:i:s'),
+            'errors' => [],
+            'name_err' => '',
+            'email_err' => '',
+            'password_err' => '',
+            'confirm_password_err' => ''
+        ];
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $data = $this->userRequest->ValidateRegisterForm($data);
 
-            $data = [
-                'name' => rtrim($_POST['name']),
-                'email' => rtrim($_POST['email']),
-                'password' => rtrim($_POST['password']),
-                'confirm_password' => rtrim($_POST['confirm_password']),
-                'created_at' => date('Y-m-d H:i:s'),
-                'name_err' => '',
-                'email_err' => '',
-                'password_err' => '',
-                'confirm_password_err' => ''
-            ];
-
-            if (empty($data['email'])) {
-                $data['email_err'] = 'Please enter email';
-            } else {
-                if ($this->userModel->findUserByEmail($data['email'])) {
-                    $data['email_err'] = 'Email is already taken!';
-                }
-            }
-
-            if (empty($data['name'])) {
-                $data['name_err'] = 'Please enter name';
-            }
-
-            if (empty($data['password'])) {
-                $data['password_err'] = 'Please enter password';
-            } elseif (strlen($data['password']) < 6) {
-                $data['password_err'] = 'Please must be at least 6 characters';
-            }
-
-            if (empty($data['confirm_password'])) {
-                $data['confirm_password_err'] = 'Please enter confirm password';
-            } else {
-                if ($data['password'] != $data['confirm_password']) {
-                    $data['confirm_password_err'] = 'Passwords do not match';
-                }
-            }
-
-            if (empty($data['email_err']) && empty($data['name_err']) && empty($data['password_err']) && empty($data['confirm_password_err'])) {
-                $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-                $this->userModel->register($data);
-                flash('register_success', 'Now you are registered, please check your email to verify account!');
-                redirect('users/login');
-
-            } else {
-                $this->view('users/register', $data);
-            }
-
-        } else {
-            $data = [
-                'name' => '',
-                'email' => '',
-                'password' => '',
-                'confirm_password' => '',
-                'name_err' => '',
-                'email_err' => '',
-                'password_err' => '',
-                'confirm_password_err' => ''
-            ];
+        if (!empty($data['errors'])) {
             $this->view('users/register', $data);
+        } else {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+            $this->userModel->register($data);
+            flash('register_success', 'Now you are registered, please check your email to verify account!');
+            redirect('users/login');
         }
+
+
     }
 
-    public function login()
+    public function login(){
+        $data = [
+            'email' => '',
+            'password' => '',
+            'email_err' => '',
+            'password_err' => '',
+            'remember' => '',
+        ];
+
+        $this->view('users/login', $data);
+    }
+
+    public function loginUser()
     {
+        $data = [
+            'email' => rtrim($_POST['email']),
+            'password' => rtrim($_POST['password']),
+            'remember' => isset($_POST['remember']) ? $_POST['remember'] : "" ,
+            'email_err' => '',
+            'password_err' => '',
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $data = [
-                'email' => rtrim($_POST['email']),
-                'password' => rtrim($_POST['password']),
-                'remember' => $_COOKIE['remember'],
-                'email_err' => '',
-                'password_err' => '',
+        ];
 
-            ];
+        $data = $this->userRequest->ValidateLoginForm($data);
 
-            if (empty($data['email'])) {
-                $data['email_err'] = 'Please enter email';
-            }
+        if (!empty($data['remember'])) {
+            setcookie("user_email", $data['email'], time() + (10 * 365 * 24 * 60 * 60));
 
-            if (empty($data['password'])) {
-                $data['password_err'] = 'Please enter password';
-            }
-
-            if ($this->userModel->findUserByEmail($data['email'])) {
-
-            } else {
-                $data['email_err'] = 'No user found';
-            }
-
-            if (!empty($data['remember'])) {
-                setcookie("user_email", $data['email'], time() + (10 * 365 * 24 * 60 * 60));
-
-                setcookie("user_password", $data['password'], time() + (10 * 365 * 24 * 60 * 60));
-            } else {
-                if (isset($_COOKIE["user_email"])) {
-                    setcookie("user_email", "");
-                    if (isset($_COOKIE["user_password"])) {
-                        setcookie("user_password", "");
-                    }
+            setcookie("user_password", $data['password'], time() + (10 * 365 * 24 * 60 * 60));
+        } else {
+            if (isset($_COOKIE["user_email"])) {
+                setcookie("user_email", "");
+                if (isset($_COOKIE["user_password"])) {
+                    setcookie("user_password", "");
                 }
             }
+        }
 
 
-            if (empty($data['email_err']) && empty($data['password_err'])) {
-                $loggedInUser = $this->userModel->login($data['email'], $data['password']);
-                if ($loggedInUser) {
-                    $this->createUserSession($loggedInUser);
-                } else {
-                    $data['password_err'] = 'Password incorrect';
-                    $this->view('users/login', $data);
-                }
+        if (empty($data['email_err']) && empty($data['password_err'])) {
+            $loggedInUser = $this->userModel->login($data['email'], $data['password']);
+            if ($loggedInUser) {
+                $this->createUserSession($loggedInUser);
             } else {
+                $data['password_err'] = 'Password incorrect';
                 $this->view('users/login', $data);
             }
-
         } else {
-            $data = [
-                'email' => '',
-                'password' => '',
-                'email_err' => '',
-                'password_err' => '',
-                'remember' => '',
-            ];
-
             $this->view('users/login', $data);
         }
+
     }
+
 
     public function createUserSession($user)
     {
@@ -176,83 +142,65 @@ class Users extends Controller
         $this->view('users/login', $data);
     }
 
+    public function send_link_form(){
+        $data = [
+            'email' => '',
+            'email_err' => '',
+        ];
+        $this->view('users/send_link', $data);
+    }
+
     public function send_link()
     {
+        $data = [
+            'email' => $_POST['email'],
+            'email_err' => '',
+        ];
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $data = [
-                'email' => $_POST['email'],
-                'email_err' => '',
-            ];
+        $data = $this->userRequest->ValidateSendLink($data);
 
-            if (empty($data['email'])) {
-                $data['email_err'] = 'Please enter email';
-            }
-            if (empty($data['email_err'])) {
-                $this->userModel->send_link($data);
-                flash('reset_pass', 'We have emailed your password reset link!');
-                $this->view('users/send_link', $data);
-            } else {
-                $this->view('users/send_link', $data);
-            }
-
+        if (!empty($data['email_err'])) {
+            $this->view('users/send_link', $data);
         } else {
-            $data = [
-                'email' => '',
-                'email_err' => '',
-            ];
+            $this->userModel->send_link($data);
+            flash('reset_pass', 'We have emailed your password reset link!');
             $this->view('users/send_link', $data);
         }
 
     }
 
+    public function reset_pass_form(){
+        $data = [
+            'email' => '',
+            'password' => '',
+            'confirm_password' => '',
+            'password_err' => '',
+            'confirm_password_err' => '',
+        ];
+        $this->view('users/reset_pass', $data);
+    }
+
     public function reset_pass()
     {
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-            $data = [
-                'email' => $_POST['email'],
-                'password' => $_POST['password'],
-                'confirm_password' => $_POST['confirm_password'],
-                'password_err' => '',
-                'confirm_password_err' => '',
-            ];
-
-            if (empty($data['password'])) {
-                $data['password_err'] = 'Please enter password';
-            } elseif (strlen($data['password']) < 6) {
-                $data['password_err'] = 'Please must be at least 6 characters';
-            }
-
-            if (empty($data['confirm_password'])) {
-                $data['confirm_password_err'] = 'Please enter confirm password';
-            } else {
-                if ($data['password'] != $data['confirm_password']) {
-                    $data['confirm_password_err'] = 'Passwords do not match';
-                }
-            }
-
-            if (empty($data['password_err']) && empty($data['confirm_password_err'])) {
-                $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-                $this->userModel->reset_pas($data);
-                flash('reset_pass', 'You just changed password, now you can log in with the new one');
-                redirect('users/login');
-
-            } else {
-                $this->view('users/reset_pass', $data);
-            }
+        $data = [
+            'email' => $_POST['email'],
+            'password' => $_POST['password'],
+            'confirm_password' => $_POST['confirm_password'],
+            'password_err' => '',
+            'confirm_password_err' => '',
+            'errors' => [],
+        ];
 
 
-        } else {
-            $data = [
-                'email' => '',
-                'password' => '',
-                'confirm_password' => '',
-                'password_err' => '',
-                'confirm_password_err' => '',
-            ];
+        $data = $this->userRequest->ValidateResetPass($data);
+
+        if (!empty($data['errors'])) {
             $this->view('users/reset_pass', $data);
+        } else {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+            $this->userModel->reset_pas($data);
+            flash('reset_pass', 'You just changed password, now you can log in with the new one');
+            redirect('users/login');
         }
 
     }
