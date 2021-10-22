@@ -24,7 +24,7 @@
                             <img src="<?php echo URLROOT; ?>/<?php echo $article->image ?> " style="width: 250px;height: 300px; margin-bottom: 10px;">
                             <h4><?php echo $article->title?></h4>
                             <p><?php echo substr(strip_tags($article->body), 0, 50), strlen($article->body) > 50 ? "..." : ""  ?></p>
-                            <a href="<?php echo URLROOT; ?>/articles/single/<?php echo $article->id ?>" class="btn btn-primary">Read More</a>
+                            <a href="<?php echo URLROOT; ?>/articles/single/<?php echo $article->slug ?>" class="btn btn-primary">Read More</a>
                         </div>
                     </div>
                 </div>

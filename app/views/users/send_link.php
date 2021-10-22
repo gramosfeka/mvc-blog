@@ -3,11 +3,10 @@
     <div class="col-md-6 mx-auto">
         <div class="card card-body bg-light mt-5">
             <?php flash('reset_pass'); ?>
-            <h2>Reset link</h2>
             <form action="<?php echo URLROOT; ?>/users/send_link" method="POST">
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" name="email" class="form-control form-control-lg
+                    <label for="email">Enter your email to send the resetting password link</label>
+                    <input type="email" name="email" class="form-control form-control-lg mt-2
                         <?php echo (!empty($data['email_err']))?'is-invalid' : '' ?>"  value="<?php if(isset($_COOKIE["user_email"])) { echo $_COOKIE["user_email"] ; }  ?>"
                     <span class="invalid-feedback"><?php echo $data['email_err'] ?></span>
                 </div>

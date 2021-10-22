@@ -4,6 +4,10 @@ require_once '../app/requests/TagRequest.php';
 
 class Tags extends Controller
 {
+    /**
+     * Tags constructor
+     * Load models
+     */
     public function __construct()
     {
 
@@ -15,6 +19,9 @@ class Tags extends Controller
 
     }
 
+    /**
+     * Shows all tags that has been created and load form to create another one
+     */
     public function index()
     {
         $tags = $this->tagModel->getTags();
@@ -27,6 +34,9 @@ class Tags extends Controller
         $this->view('tags/index', $data);
     }
 
+    /**
+     * Add tag
+     */
     public function store()
     {
         $tags = $this->tagModel->getTags();
@@ -51,6 +61,10 @@ class Tags extends Controller
         }
     }
 
+    /**
+     * @param $id
+     * Load edit tag form for specific category
+     */
     public function edit($id)
     {
         $tag = $this->tagModel->getTagById($id);
@@ -62,6 +76,10 @@ class Tags extends Controller
         $this->view('tags/edit', $data);
     }
 
+    /**
+     * @param $id
+     * Edit tag
+     */
     public function update($id){
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
@@ -83,6 +101,10 @@ class Tags extends Controller
         }
     }
 
+    /**
+     * @param $id
+     * Delete tag
+     */
     public function delete($id)
     {
         $this->tagModel->deleteTag($id);

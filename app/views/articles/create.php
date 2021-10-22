@@ -8,6 +8,7 @@
             <div class="card-body">
 
                 <form method="POST" enctype="multipart/form-data" action="<?php echo URLROOT ?>/articles/store">
+                    <input type="hidden" name="id" value="<?php echo '$id'?>">
 
                     <div class="form-group">
                         <label for="title">Title:</label>

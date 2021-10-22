@@ -4,6 +4,11 @@ class Home extends Controller
 {
     private $db;
     private $seeders;
+
+    /**
+     * Home constructor.
+     * Load database and models
+     */
     public function __construct()
     {
         $this->db = new Database();
@@ -14,6 +19,9 @@ class Home extends Controller
         $this->categoryModel = $this->model('Category');
     }
 
+    /**
+     * Shows all approved articles
+     */
     public function index()
     {
 
@@ -29,13 +37,18 @@ class Home extends Controller
     }
 
 
+    /**
+     * Insert tables into database
+     */
     public function migration(){
         $this->db->migrate();
-
 
         redirect('home/index');
     }
 
+    /**
+     * Insert data into specific tables
+     */
     public function seeder(){
         $this->seeders->seeder();
 

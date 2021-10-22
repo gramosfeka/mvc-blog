@@ -6,6 +6,11 @@ class Core{
     protected $currentMethod = 'index';
     protected $params = [];
 
+    /**
+     * Core constructor.
+     * Creates URL & loads core controller
+     * URL FORMAT - /controller/method/params
+     */
     public function __construct()
     {
         $url = $this->getUrl();
@@ -36,6 +41,10 @@ class Core{
     }
 
 
+    /**
+     * @return array|mixed|string
+     * return url as an array and adds "/" on the end of each item of this array
+     */
     public function getUrl(){
         if(isset($_GET['url'])){
             $url = rtrim($_GET['url'], '/');

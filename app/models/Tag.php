@@ -2,11 +2,20 @@
 class Tag{
     private $db;
 
+    /**
+     * Tag constructor
+     * Load database
+     */
     public function __construct()
     {
         $this->db = new Database();
     }
 
+    /**
+     * @param $data
+     * @return bool
+     * Add tag to database
+     */
     public function addTag($data){
 
         $this->db->query('INSERT INTO tags (id, name, created_at) VALUES (:id,:name,:created_at)');
@@ -21,6 +30,11 @@ class Tag{
 
     }
 
+    /**
+     * @param $data
+     * @return bool
+     * Edit tag
+     */
     public function editTag($data){
 
         $this->db->query('UPDATE tags SET name = :name WHERE id = :id');
@@ -35,6 +49,11 @@ class Tag{
         }
     }
 
+    /**
+     * @param $id
+     * @return bool
+     * Delete tag
+     */
     public function deleteTag($id){
         $this->db->query('DELETE FROM tags WHERE id = :id');
 
@@ -48,6 +67,10 @@ class Tag{
     }
 
 
+    /**
+     * @return mixed
+     * returns all tags
+     */
     public function getTags(){
         $this->db->query("SELECT * FROM tags");
 
@@ -57,6 +80,11 @@ class Tag{
     }
 
 
+    /**
+     * @param $id
+     * @return mixed
+     * returns tag of specific id
+     */
     public function getTagById($id){
         $this->db->query("SELECT * FROM tags WHERE id = :id");
 
@@ -68,6 +96,11 @@ class Tag{
     }
 
 
+    /**
+     * @param $id
+     * @return array
+     * returns all names of tags of specific article
+     */
     public function getTagByArticle($id){
         $this->db->query("SELECT tag_id FROM article_tag WHERE article_id = :id");
         $this->db->bind(':id', $id);
@@ -87,6 +120,9 @@ class Tag{
         }
         return $tagNames;
     }
+
+
+
 
 
 

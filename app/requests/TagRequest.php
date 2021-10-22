@@ -2,6 +2,12 @@
 
 class TagRequest{
 
+    /**
+     * @param $data
+     * @return mixed
+     *
+     * Validate Tag From
+     */
     public function ValidateForm($data){
 
         if ($data['name'] == "") {

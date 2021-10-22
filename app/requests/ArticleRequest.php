@@ -1,6 +1,12 @@
 <?php
 class ArticleRequest
 {
+    /**
+     * @param $data
+     * @return mixed
+     *
+     * Validate Article From
+     */
     public function ValidationForm($data)
     {
         if($data['title'] == ""){

@@ -3,6 +3,10 @@ require_once '../app/requests/ArticleRequest.php';
 
 class Articles extends Controller
 {
+    /**
+     * Articles constructor.
+     * Load models
+     */
     public function __construct()
     {
         $this->articlesModel = $this->model('Article');
@@ -14,6 +18,9 @@ class Articles extends Controller
 
     }
 
+    /**
+     * Shows all articles that has been created from user that is logged in
+     */
     public function index()
     {
         if (isAdmin()) {
@@ -29,9 +36,15 @@ class Articles extends Controller
         $this->view('articles/index', $data);
     }
 
+    /**
+     * Load form for creat post
+     */
     public function create()
     {
 
+        if (isAdmin()) {
+            redirect('home/index');
+        }
         $categories = $this->categoryModel->getCategories();
         $tags = $this->tagModel->getTags();
 
@@ -54,7 +67,11 @@ class Articles extends Controller
     }
 
 
+    /**
+     * Add Article
+     */
     public function store(){
+
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
         $categories = $this->categoryModel->getCategories();
@@ -67,7 +84,7 @@ class Articles extends Controller
             move_uploaded_file($_FILES['image']['tmp_name'], $destination);
         }
 
-        $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title'])));
+        $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower(rand(0,1000).'-'.$_POST['title'])));
 
         $data = [
             'title' => $_POST['title'],
@@ -102,12 +119,21 @@ class Articles extends Controller
         }
     }
 
+    /**
+     * @param $id
+     * Load edit form for specific article
+     */
     public function edit($id)
     {
+
         $categories = $this->categoryModel->getCategories();
         $tags = $this->tagModel->getTags();
         $article = $this->articlesModel->getArticleById($id);
         $articleTags = $this->tagModel->getTagByArticle($id);
+
+        if (isAdmin() || $_SESSION['user_id'] != $article->user_id) {
+            redirect('home/index');
+        }
 
         $data = [
                 'id' => $article->id,
@@ -128,6 +154,10 @@ class Articles extends Controller
 
     }
 
+    /**
+     * @param $id
+     * Edit specific article
+     */
     public function update($id){
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
@@ -143,7 +173,7 @@ class Articles extends Controller
             move_uploaded_file($_FILES['image']['tmp_name'], $destination);
         }
 
-        $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower($_POST['title'])));
+        $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(rand(0,1000).'-'.strtolower($_POST['title'])));
 
         $data = [
             'id' => $article->id,
@@ -179,6 +209,10 @@ class Articles extends Controller
         }
     }
 
+    /**
+     * @param $id
+     * Delete specific article
+     */
     public function delete($id)
     {
         if ($this->articlesModel->deleteArticle($id)) {
@@ -190,6 +224,10 @@ class Articles extends Controller
 
     }
 
+    /**
+     * @param $id
+     * Approve specific article that created from user
+     */
     public function approve($id)
     {
         if (!isAdmin()) {
@@ -202,13 +240,17 @@ class Articles extends Controller
         redirect('articles/index');
     }
 
-    public function single($id)
+    /**
+     * @param $slug
+     * Show single page of specific article
+     */
+    public function single($slug)
     {
 
-        $article = $this->articlesModel->getArticleById($id);
+        $article = $this->articlesModel->getArticleBySlug($slug);
         $categories = $this->categoryModel->getCategories();
         $users = $this->userModel->getUsers();
-        $tags = $this->tagModel->getTagByArticle($id);
+        $tags = $this->tagModel->getTagByArticle($article->id);
         $data = [
             'article' => $article,
             'categories' => $categories,
@@ -219,6 +261,10 @@ class Articles extends Controller
         $this->view('articles/single', $data);
     }
 
+    /**
+     * @param $category
+     * Shows articles of specific category
+     */
     public function getArticlesByCategory($category)
     {
         $articles = $this->articlesModel->getArticlesByCategory($category);
@@ -234,6 +280,9 @@ class Articles extends Controller
     }
 
 
+    /**
+     * Change position of table rows on articles table
+     */
     public function positions(){
         $this->articlesModel->positions();
     }

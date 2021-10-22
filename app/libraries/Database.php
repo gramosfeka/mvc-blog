@@ -12,6 +12,10 @@ class Database
     private $stm;
     private $error;
 
+    /**
+     * Database constructor.
+     * Set DSNC and create PDO instance
+     */
     public function __construct()
     {
         $dsn = 'mysql:host =' . $this->host . ';dbname=' . $this->dbname;
@@ -30,11 +34,22 @@ class Database
         }
     }
 
+    /**
+     * @param $sql
+     * Prepare statement with query
+     */
     public function query($sql)
     {
         $this->stm = $this->dbh->prepare($sql);
     }
 
+    /**
+     * @param $param
+     * @param $value
+     * @param null $type
+     *
+     * Bind values
+     */
     public function bind($param, $value, $type = null)
     {
         if (is_null($type)) {
@@ -56,23 +71,43 @@ class Database
         $this->stm->bindValue($param, $value, $type);
     }
 
+    /**
+     * @return mixed
+     *
+     * Execute the prepared statement
+     */
     public function execute()
     {
         return $this->stm->execute();
     }
 
+    /**
+     * @return mixed
+     *
+     * Get result set as array of objects
+     */
     public function resultSet()
     {
         $this->execute();
         return $this->stm->fetchAll(PDO::FETCH_OBJ);
     }
 
+    /**
+     * @return mixed
+     *
+     * Get result set as associative  array
+     */
     public function resultSetASSOC()
     {
         $this->execute();
         return $this->stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * @return mixed
+     *
+     * Get single record as object
+     */
     public function single()
     {
         $this->execute();
@@ -80,11 +115,19 @@ class Database
         return $this->stm->fetch(PDO::FETCH_OBJ);
     }
 
+    /**
+     * @return mixed
+     *
+     * Get row count
+     */
     public function rowCount()
     {
         return $this->stm->rowCount();
     }
 
+    /**
+     * Insert tables into database
+     */
     public function migrate()
     {
 

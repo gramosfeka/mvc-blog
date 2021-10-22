@@ -3,11 +3,21 @@
 
 class UserRequest extends Controller {
 
+    /**
+     * UserRequest constructor.
+     * Load model
+     */
     public function __construct()
     {
         $this->userModel = $this->model('User');
     }
 
+    /**
+     * @param $data
+     * @return mixed
+     *
+     * Validate User Register From
+     */
     public function ValidateRegisterForm($data){
 
 
@@ -43,9 +53,12 @@ class UserRequest extends Controller {
     }
 
 
-
-
-
+    /**
+     * @param $data
+     * @return mixed
+     *
+     * Validate User Login From
+     */
     public function ValidateLoginForm($data){
 
         if ($data['email']== "") {

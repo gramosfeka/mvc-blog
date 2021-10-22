@@ -4,12 +4,20 @@ class Article
 {
     private $db;
 
+    /**
+     * Article constructor.
+     * Load database
+     */
     public function __construct()
     {
         $this->db = new Database();
     }
 
 
+    /**
+     * @return mixed
+     * returns all articles of specific user that is logged in
+     */
     public function getArticles()
     {
         $user_loggedIn = $_SESSION['user_id'];
@@ -22,6 +30,10 @@ class Article
         return $results;
     }
 
+    /**
+     * @return mixed
+     * returns all articles that are approved
+     */
     public function getArticlesApproved()
     {
         $this->db->query("SELECT * FROM articles WHERE status = :status");
@@ -34,6 +46,10 @@ class Article
     }
 
 
+    /**
+     * @return mixed
+     * returns all articles that are not approved
+     */
     public function getArticlesNotApproved()
     {
         $this->db->query("SELECT * FROM articles WHERE status = :status ORDER BY position");
@@ -44,6 +60,11 @@ class Article
         return $results;
     }
 
+    /**
+     * @param $category
+     * @return mixed
+     * returns all articles of specific category
+     */
     public function getArticlesByCategory($category)
     {
         $this->db->query("SELECT * FROM articles WHERE status = :status and category_id = :category_id");
@@ -56,6 +77,11 @@ class Article
     }
 
 
+    /**
+     * @param $id
+     * @return mixed
+     * return article of specific id
+     */
     public function getArticleById($id)
     {
         $this->db->query("SELECT * FROM articles WHERE id = :id");
@@ -68,7 +94,28 @@ class Article
     }
 
 
+    /**
+     * @param $slug
+     * @return mixed
+     * return article of specific slug
+     */
+    public function getArticleBySlug($slug)
+        {
+            $this->db->query("SELECT * FROM articles WHERE slug = :slug");
 
+            $this->db->bind(':slug', $slug);
+
+            $row = $this->db->single();
+
+            return $row;
+        }
+
+
+    /**
+     * @param $data
+     * @return bool
+     * Add article on database
+     */
     public function createArticle($data)
     {
         $this->db->query('INSERT INTO articles (category_id, title, slug, body, user_id, image, created_at) VALUES (:category_id, :title, :slug, :body, :user_id,:image,:created_at)');
@@ -89,6 +136,10 @@ class Article
 
     }
 
+    /**
+     * @param $data
+     * Add tags that are selected for specific article on table article_tag
+     */
     public function tagsArticle($data)
     {
         $this->db->query('SELECT id FROM articles WHERE slug = :slug');
@@ -106,6 +157,10 @@ class Article
     }
 
 
+    /**
+     * @param $data
+     * Edit tags that are selected for specific article on table article_tag
+     */
     public function editTagsArticle($data)
     {
         $this->db->query('SELECT * FROM articles WHERE slug = :slug');
@@ -128,6 +183,11 @@ class Article
     }
 
 
+    /**
+     * @param $data
+     * @return bool
+     * Edit article
+     */
     public function editArticle($data)
     {
 
@@ -147,6 +207,11 @@ class Article
         }
     }
 
+    /**
+     * @param $id
+     * @return bool
+     * Delete Article
+     */
     public function deleteArticle($id)
     {
         $this->db->query('DELETE FROM articles WHERE id = :id');
@@ -160,6 +225,11 @@ class Article
         }
     }
 
+    /**
+     * @param $id
+     * @return bool
+     * Approve article
+     */
     public function approve($id)
     {
         $this->db->query('UPDATE articles SET status = :status WHERE id = :id');
@@ -174,6 +244,9 @@ class Article
     }
 
 
+    /**
+     * Edit positions of table rows on articles table
+     */
     public function positions()
     {
         foreach ($_POST['positions'] as $position){

@@ -6,6 +6,11 @@ class Categories extends Controller
 {
 
     private $categoryRequest;
+
+    /**
+     * Categories constructor.
+     * Load models
+     */
     public function __construct()
     {
         if (!isAdmin()) {
@@ -16,6 +21,9 @@ class Categories extends Controller
 
     }
 
+    /**
+     * Shows all categories that has been created and load form to create another one
+     */
     public function index()
     {
         $categories = $this->categoryModel->getCategories();
@@ -28,6 +36,9 @@ class Categories extends Controller
         $this->view('categories/index', $data);
     }
 
+    /**
+     * Add category
+     */
     public function store()
     {
         $categories = $this->categoryModel->getCategories();
@@ -54,6 +65,10 @@ class Categories extends Controller
 
     }
 
+    /**
+     * @param $id
+     * Load edit category form for specific category
+     */
     public function edit($id)
     {
         $category = $this->categoryModel->getCategoryById($id);
@@ -68,7 +83,10 @@ class Categories extends Controller
     }
 
 
-
+    /**
+     * @param $id
+     * Edit category
+     */
     public function update($id){
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
@@ -90,6 +108,10 @@ class Categories extends Controller
         }
     }
 
+    /**
+     * @param $id
+     * Delete category
+     */
     public function delete($id)
     {
         $this->categoryModel->deleteCategory($id);

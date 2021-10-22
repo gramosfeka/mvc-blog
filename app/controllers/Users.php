@@ -4,6 +4,10 @@ require_once '../app/requests/UserRequest.php';
 class Users extends Controller
 {
 
+    /**
+     * Users constructor.
+     * Load models
+     */
     public function __construct()
     {
         $this->userModel = $this->model('User');
@@ -11,6 +15,9 @@ class Users extends Controller
 
     }
 
+    /**
+     * Load register form
+     */
     public function register(){
         $data = [
             'name' => '',
@@ -25,6 +32,9 @@ class Users extends Controller
         $this->view('users/register', $data);
     }
 
+    /**
+     * Register user
+     */
     public function registerUser()
     {
         $data = [
@@ -54,6 +64,9 @@ class Users extends Controller
 
     }
 
+    /**
+     * Load login form
+     */
     public function login(){
         $data = [
             'email' => '',
@@ -66,6 +79,9 @@ class Users extends Controller
         $this->view('users/login', $data);
     }
 
+    /**
+     * Login user
+     */
     public function loginUser()
     {
         $data = [
@@ -92,7 +108,6 @@ class Users extends Controller
             }
         }
 
-
         if (empty($data['email_err']) && empty($data['password_err'])) {
             $loggedInUser = $this->userModel->login($data['email'], $data['password']);
             if ($loggedInUser) {
@@ -108,6 +123,10 @@ class Users extends Controller
     }
 
 
+    /**
+     * @param $user
+     * Create user session
+     */
     public function createUserSession($user)
     {
         $_SESSION['user_id'] = $user->id;
@@ -118,6 +137,9 @@ class Users extends Controller
         redirect('home/index');
     }
 
+    /**
+     * Logout, unset sessions
+     */
     public function logout()
     {
         unset($_SESSION['user_id']);
@@ -128,6 +150,9 @@ class Users extends Controller
         redirect('users/login');
     }
 
+    /**
+     *  Verify user
+     */
     public function verify()
     {
         $this->userModel->verify();
@@ -142,6 +167,9 @@ class Users extends Controller
         $this->view('users/login', $data);
     }
 
+    /**
+     * Load send link for resetting password form
+     */
     public function send_link_form(){
         $data = [
             'email' => '',
@@ -150,6 +178,9 @@ class Users extends Controller
         $this->view('users/send_link', $data);
     }
 
+    /**
+     * Send link to reset pass
+     */
     public function send_link()
     {
         $data = [
@@ -169,6 +200,9 @@ class Users extends Controller
 
     }
 
+    /**
+     * Load reset password form
+     */
     public function reset_pass_form(){
         $data = [
             'email' => '',
@@ -180,6 +214,9 @@ class Users extends Controller
         $this->view('users/reset_pass', $data);
     }
 
+    /**
+     * Reset password
+     */
     public function reset_pass()
     {
         $data = [

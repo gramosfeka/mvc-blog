@@ -5,10 +5,13 @@
             <?php  flash('articles_message') ?>
             <h1>All Articles</h1>
         </div>
+        <?php if (!isAdmin()) : ?>
         <div class="col-md-2">
             <a href="<?php echo URLROOT ?>/articles/create" class="btn btn-lg btn-block btn-primary btn-h1-spacing">Create New
                 Article</a>
         </div>
+        <?php endif; ?>
+
         <div class="col-md-12">
             <hr>
         </div>
