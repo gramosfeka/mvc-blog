@@ -89,6 +89,7 @@ class Users extends Controller
             'password' => rtrim($_POST['password']),
             'remember' => isset($_POST['remember']) ? $_POST['remember'] : "" ,
             'email_err' => '',
+            'active_err' => '',
             'password_err' => '',
 
         ];
@@ -97,7 +98,6 @@ class Users extends Controller
 
         if (!empty($data['remember'])) {
             setcookie("user_email", $data['email'], time() + (10 * 365 * 24 * 60 * 60));
-
             setcookie("user_password", $data['password'], time() + (10 * 365 * 24 * 60 * 60));
         } else {
             if (isset($_COOKIE["user_email"])) {
@@ -111,7 +111,13 @@ class Users extends Controller
         if (empty($data['email_err']) && empty($data['password_err'])) {
             $loggedInUser = $this->userModel->login($data['email'], $data['password']);
             if ($loggedInUser) {
-                $this->createUserSession($loggedInUser);
+                if(!($this->userModel->verifyUser($data['email']))){
+                    flash('login_error', 'Your account has not been verified');
+                    $this->view('users/login', $data);
+                }else{
+                    $this->createUserSession($loggedInUser);
+
+                }
             } else {
                 $data['password_err'] = 'Password incorrect';
                 $this->view('users/login', $data);

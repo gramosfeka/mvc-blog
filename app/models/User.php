@@ -165,4 +165,15 @@ class User
     }
 
 
+    public function verifyUser($email)
+    {
+        $this->db->query('SELECT * FROM users WHERE email = :email and active = :active');
+        $this->db->bind(':email', $email);
+        $this->db->bind('active', 1);
+        $user = $this->db->single();
+
+        return $user;
+    }
+
+
 }

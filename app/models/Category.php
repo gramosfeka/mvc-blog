@@ -21,8 +21,7 @@ class Category
     public function addCategory($data)
     {
 
-        $this->db->query('INSERT INTO categories( name, created_at) VALUES (:name,:created_at)');
-        $this->db->bind(':created_at', $data['created_at']);
+        $this->db->query('INSERT INTO categories( name) VALUES (:name)');
         $this->db->bind(':name', $data['name']);
         if ($this->db->execute()) {
             return true;

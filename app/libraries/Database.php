@@ -1,6 +1,6 @@
 <?php
 
-class Database
+class Database extends Controller
 {
 
     private $host = DB_HOST;
@@ -22,15 +22,16 @@ class Database
 
         $options = array(
             PDO::ATTR_PERSISTENT => true,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         );
 
         try {
             $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
         } catch (Exception $e) {
-            $this->error = $e->getMessage();
-            echo $this->error;
+            if ($e) {
+                $this->view('db/error');
+                die();
+            }
         }
     }
 
@@ -158,7 +159,6 @@ class Database
         CREATE TABLE `categories`  (
           `id` int(11) NOT NULL AUTO_INCREMENT,
           `name` varchar(255) NOT NULL,
-          `created_at` datetime NOT NULL,
           PRIMARY KEY (`id`) 
           )
          
@@ -173,7 +173,6 @@ class Database
                 CREATE TABLE tags  (
                   id int(11) NOT NULL AUTO_INCREMENT,
                   name varchar(255) NOT NULL,
-                  created_at datetime NOT NULL,
                   PRIMARY KEY (id) 
                 )                   
             ";
@@ -195,7 +194,7 @@ class Database
           `user_id` int(11) NOT NULL,
           `category_id` int(11) NOT NULL,
           `status` tinyint(1) DEFAULT 0,
-          `created_at` date NULL DEFAULT NULL,
+          `created_at` time NULL DEFAULT NULL,
           `position` int(255) DEFAULT 0,
           PRIMARY KEY (`id`),
           CONSTRAINT `category_id` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,

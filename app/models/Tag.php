@@ -1,5 +1,7 @@
 <?php
-class Tag{
+
+class Tag
+{
     private $db;
 
     /**
@@ -16,15 +18,15 @@ class Tag{
      * @return bool
      * Add tag to database
      */
-    public function addTag($data){
+    public function addTag($data)
+    {
 
-        $this->db->query('INSERT INTO tags (id, name, created_at) VALUES (:id,:name,:created_at)');
+        $this->db->query('INSERT INTO tags (id, name) VALUES (:id,:name)');
         $this->db->bind(':id', $data['id']);
-        $this->db->bind(':created_at', $data['created_at']);
-        $this->db->bind(':name',$data['name']);
-        if($this->db->execute()){
+        $this->db->bind(':name', $data['name']);
+        if ($this->db->execute()) {
             return true;
-        }else{
+        } else {
             return false;
         }
 
@@ -35,14 +37,15 @@ class Tag{
      * @return bool
      * Edit tag
      */
-    public function editTag($data){
+    public function editTag($data)
+    {
 
         $this->db->query('UPDATE tags SET name = :name WHERE id = :id');
 
         $this->db->bind(':id', $data['id']);
         $this->db->bind(':name', $data['name']);
 
-        if($this->db->execute()){
+        if ($this->db->execute()) {
             return true;
         } else {
             return false;
@@ -54,12 +57,13 @@ class Tag{
      * @return bool
      * Delete tag
      */
-    public function deleteTag($id){
+    public function deleteTag($id)
+    {
         $this->db->query('DELETE FROM tags WHERE id = :id');
 
         $this->db->bind(':id', $id);
 
-        if($this->db->execute()){
+        if ($this->db->execute()) {
             return true;
         } else {
             return false;
@@ -71,7 +75,8 @@ class Tag{
      * @return mixed
      * returns all tags
      */
-    public function getTags(){
+    public function getTags()
+    {
         $this->db->query("SELECT * FROM tags");
 
         $results = $this->db->resultset();
@@ -85,7 +90,8 @@ class Tag{
      * @return mixed
      * returns tag of specific id
      */
-    public function getTagById($id){
+    public function getTagById($id)
+    {
         $this->db->query("SELECT * FROM tags WHERE id = :id");
 
         $this->db->bind(':id', $id);
@@ -101,7 +107,8 @@ class Tag{
      * @return array
      * returns all names of tags of specific article
      */
-    public function getTagByArticle($id){
+    public function getTagByArticle($id)
+    {
         $this->db->query("SELECT tag_id FROM article_tag WHERE article_id = :id");
         $this->db->bind(':id', $id);
         $tagsIds = $this->db->resultSetASSOC();
@@ -110,9 +117,9 @@ class Tag{
         $this->db->query("SELECT * FROM tags");
         $tags = $this->db->resultSetASSOC();
 
-        foreach ($tags as $tag){
-            foreach ($tagsIds as $tId){
-                if(in_array($tag['id'], $tId)){
+        foreach ($tags as $tag) {
+            foreach ($tagsIds as $tId) {
+                if (in_array($tag['id'], $tId)) {
                     $tagNames[] = $tag['name'];
 
                 }
@@ -120,11 +127,6 @@ class Tag{
         }
         return $tagNames;
     }
-
-
-
-
-
 
 
 }

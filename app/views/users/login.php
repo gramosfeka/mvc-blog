@@ -4,6 +4,7 @@
             <div class="card card-body bg-light mt-5">
                 <?php flash('register_success'); ?>
                 <?php flash('reset_pass'); ?>
+                <?php flash('login_error'); ?>
                 <h2>Login</h2>
                 <form action="<?php echo URLROOT; ?>/users/loginUser" method="POST">
                     <div class="form-group">

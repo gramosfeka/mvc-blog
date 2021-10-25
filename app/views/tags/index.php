@@ -29,7 +29,6 @@
             <tr>
                 <th>#</th>
                 <th>Name</th>
-                <th>Created At</th>
                 <th>Edit</th>
             </tr>
             </thead>
@@ -38,7 +37,6 @@
                 <tr>
                     <th scope="row"><?php echo $tag->id ?></th>
                     <td><?php echo $tag->name ?></td>
-                    <td><?php echo $tag->created_at ?></td>
                     <td><a href="<?php echo URLROOT; ?>/tags/edit/<?php echo $tag->id ?>"
                            class="btn btn-light btn-sm m-1">Edit</a></td>
 

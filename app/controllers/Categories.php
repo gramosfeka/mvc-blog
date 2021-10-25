@@ -48,16 +48,15 @@ class Categories extends Controller
         $data = [
             'name' => trim($_POST['name']),
             'categories' => $categories,
-            'created_at' => date('Y-m-d H:i:s'),
             'name_err' => '',
             'errors' => [],
         ];
 
 
         $data = $this->categoryRequest->ValidateForm($data);
-        if(!empty($data['errors'])){
+        if (!empty($data['errors'])) {
             $this->view('categories/index', $data);
-        }else{
+        } else {
             $this->categoryModel->addCategory($data);
             flash('category_success', 'Category has been added');
             redirect('categories/index');
@@ -87,7 +86,8 @@ class Categories extends Controller
      * @param $id
      * Edit category
      */
-    public function update($id){
+    public function update($id)
+    {
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
         $data = [
@@ -99,7 +99,7 @@ class Categories extends Controller
 
         $data = $this->categoryRequest->ValidateForm($data);
 
-        if(!empty($data['errors'])){
+        if (!empty($data['errors'])) {
             $this->view('categories/edit', $data);
         } else {
             $this->categoryModel->editCategory($data);
@@ -118,8 +118,6 @@ class Categories extends Controller
         flash('category_success', 'Category has been removed');
         redirect('categories');
     }
-
-
 
 
 }

@@ -15,22 +15,26 @@ class Articles extends Controller
         $this->userModel = $this->model('User');
         $this->articleRequest = new ArticleRequest();
 
+        if (!isLoggedIn()) {
+            redirect('users/login');
+        }
 
     }
 
     /**
      * Shows all articles that has been created from user that is logged in
      */
-    public function index()
+    public function index($page_nr = 1)
     {
         if (isAdmin()) {
-            $articles = $this->articlesModel->getArticlesNotApproved();
+            $pagination = $this->articlesModel->paginationArticlesAdmin($page_nr);
         } else {
-            $articles = $this->articlesModel->getArticles();
+            $pagination = $this->articlesModel->paginationArticlesUser($page_nr);
         }
 
         $data = [
-            'articles' => $articles
+            'pagination' => $pagination,
+
         ];
 
         $this->view('articles/index', $data);
@@ -42,9 +46,6 @@ class Articles extends Controller
     public function create()
     {
 
-        if (isAdmin()) {
-            redirect('home/index');
-        }
         $categories = $this->categoryModel->getCategories();
         $tags = $this->tagModel->getTags();
 
@@ -78,11 +79,17 @@ class Articles extends Controller
         $tags = $this->tagModel->getTags();
 
 
-        if (isset($_FILES['image']['name'])) {
-            $folder = "img/";
+        if(!($_POST['image'])){
+            $folder = "img/img.jpg";
+            $destination = $folder . $_FILES['image']['name'];
+            move_uploaded_file($_FILES['image']['tmp_name'], $destination);
+
+        }else{
+            $folder = "img";
             $destination = $folder . $_FILES['image']['name'];
             move_uploaded_file($_FILES['image']['tmp_name'], $destination);
         }
+
 
         $slug = preg_replace('/[^a-z0-9]+/i', '-', trim(strtolower(rand(0,1000).'-'.$_POST['title'])));
 
@@ -131,7 +138,7 @@ class Articles extends Controller
         $article = $this->articlesModel->getArticleById($id);
         $articleTags = $this->tagModel->getTagByArticle($id);
 
-        if (isAdmin() || $_SESSION['user_id'] != $article->user_id) {
+        if (!(isAdmin()) && $_SESSION['user_id'] != $article->user_id) {
             redirect('home/index');
         }
 
@@ -167,8 +174,13 @@ class Articles extends Controller
 
         $articleTags = $this->tagModel->getTagByArticle($id);
 
-        if (isset($_FILES['image']['name'])) {
-            $folder = "img/";
+        if(!$_POST['image']){
+            $folder = "img/img.jpg";
+            $destination = $folder . $_FILES['image']['name'];
+            move_uploaded_file($_FILES['image']['tmp_name'], $destination);
+
+        }else{
+            $folder = "img";
             $destination = $folder . $_FILES['image']['name'];
             move_uploaded_file($_FILES['image']['tmp_name'], $destination);
         }
@@ -265,14 +277,16 @@ class Articles extends Controller
      * @param $category
      * Shows articles of specific category
      */
-    public function getArticlesByCategory($category)
+    public function getArticlesByCategory($category_id, $page_nr = 1)
     {
-        $articles = $this->articlesModel->getArticlesByCategory($category);
+        $articles = $this->articlesModel->getArticlesByCategory($category_id);
         $categories = $this->categoryModel->getCategories();
+        $pagination = $this->articlesModel->paginationCat($category_id, $page_nr);
 
         $data = [
             'articles' => $articles,
             'categories' => $categories,
+            'pagination' => $pagination
 
         ];
         $this->view('home/index', $data);

@@ -13,7 +13,6 @@ class Controller {
       return new $model();
     }
 
-
     /**
      * @param $view
      * @param array $data
@@ -26,13 +25,6 @@ class Controller {
             die('View does not exist');
         }
     }
-
-
-
-
-
-
-
 
 
 }

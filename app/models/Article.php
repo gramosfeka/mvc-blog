@@ -48,12 +48,11 @@ class Article
 
     /**
      * @return mixed
-     * returns all articles that are not approved
+     * returns all articles
      */
-    public function getArticlesNotApproved()
+    public function getArticlesAdmin()
     {
-        $this->db->query("SELECT * FROM articles WHERE status = :status ORDER BY position");
-        $this->db->bind(':status', 0);
+        $this->db->query("SELECT * FROM articles ORDER BY position");
 
         $results = $this->db->resultset();
 
@@ -70,6 +69,7 @@ class Article
         $this->db->query("SELECT * FROM articles WHERE status = :status and category_id = :category_id");
         $this->db->bind(':status', 1);
         $this->db->bind(':category_id', $category);
+
 
         $results = $this->db->resultset();
 
@@ -179,7 +179,6 @@ class Article
             $this->db->execute();
         }
 
-
     }
 
 
@@ -263,5 +262,155 @@ class Article
 
 
     }
+
+
+    /**
+     * @param int $page_nr
+     * @return array
+     *
+     * Pagination for articles in home page
+     */
+    public function pagination($page_nr = 1){
+        $postForPage = 5 ;
+
+        $this->db->query("SELECT * FROM articles WHERE status = :status");
+        $this->db->bind(':status', 1);
+        $db = $this->db->resultset();
+
+        $countPosts = count($db);
+
+
+        $result = ceil($countPosts /$postForPage );
+
+
+        $offset = ($page_nr - 1) * $postForPage;
+
+        $this->db->query("SELECT * FROM articles WHERE status = :status ORDER BY `created_at`  DESC LIMIT :limit OFFSET :offset");
+        $this->db->bind(':status', 1);
+        $this->db->bind(':limit', (int) $postForPage, PDO::PARAM_INT);
+        $this->db->bind(':offset', (int) $offset, PDO::PARAM_INT);
+        $this->db->execute();
+        $sql = $this->db->resultset();
+
+
+        return [
+            'totalAll' => $result,
+            'articles' => $sql
+        ];
+
+    }
+
+
+    /**
+     * @param $category_id
+     * @param int $page_nr
+     * @return array
+     *
+     * Pagination for articles by category in home page
+     */
+    public function paginationCat($category_id, $page_nr = 1){
+        $postForPage = 5 ;
+
+        $this->db->query("SELECT * FROM categories WHERE id = :id");
+        $this->db->bind(':id', $category_id);
+        $category = $this->db->single();
+        $id = $category->id;
+
+        $this->db->query("SELECT * FROM articles WHERE status = :status and category_id = :category_id");
+        $this->db->bind(':status', 1);
+        $this->db->bind(':category_id', $category_id);
+        $db = $this->db->resultset();
+
+        $countPosts = count($db);
+        $result = ceil($countPosts /$postForPage );
+        $offset = ($page_nr - 1) * $postForPage;
+
+        $this->db->query("SELECT * FROM articles WHERE status = :status and category_id = :category_id ORDER BY `created_at` LIMIT :limit OFFSET :offset");
+        $this->db->bind(':status', 1);
+        $this->db->bind(':category_id', $category_id);
+        $this->db->bind(':limit', (int) $postForPage, PDO::PARAM_INT);
+        $this->db->bind(':offset', (int) $offset, PDO::PARAM_INT);
+        $this->db->execute();
+        $sql = $this->db->resultset();
+
+
+        return [
+            'totalCat' => $result,
+            'articles' => $sql,
+            'id' => $id
+        ];
+
+    }
+
+
+    /**
+     * @param int $page_nr
+     * @return array
+     *
+     * Pagination for admin articles list
+     */
+    public function paginationArticlesAdmin($page_nr = 1){
+        $postForPage = 10 ;
+
+        $this->db->query("SELECT * FROM articles ");
+        $db = $this->db->resultset();
+        $countPosts = count($db);
+
+        $result = ceil($countPosts /$postForPage );
+
+        $offset = ($page_nr - 1) * $postForPage;
+
+        $this->db->query("SELECT * FROM  articles ORDER BY position LIMIT :limit OFFSET :offset");
+        $this->db->bind(':limit', (int) $postForPage, PDO::PARAM_INT);
+        $this->db->bind(':offset', (int) $offset, PDO::PARAM_INT);
+        $this->db->execute();
+        $sql = $this->db->resultset();
+
+
+        return [
+            'totalAll' => $result,
+            'articles' => $sql
+        ];
+
+    }
+
+
+    /**
+     * @param int $page_nr
+     * @return array
+     *
+     * Pagination for user articles list
+     */
+    public function paginationArticlesUser($page_nr = 1){
+        $postForPage = 10 ;
+
+        $user_loggedIn = $_SESSION['user_id'];
+        $this->db->query("SELECT * FROM articles WHERE user_id = :user_id ");
+        $this->db->bind(':user_id', $user_loggedIn);
+
+        $db = $this->db->resultset();
+
+        $countPosts = count($db);
+
+        $result = ceil($countPosts /$postForPage );
+
+        $offset = ($page_nr - 1) * $postForPage;
+
+        $this->db->query("SELECT * FROM articles WHERE user_id = :user_id ORDER BY position LIMIT :limit OFFSET :offset");
+        $this->db->bind(':user_id', $user_loggedIn);
+        $this->db->bind(':limit', (int) $postForPage, PDO::PARAM_INT);
+        $this->db->bind(':offset', (int) $offset, PDO::PARAM_INT);
+        $this->db->execute();
+        $sql = $this->db->resultset();
+
+
+        return [
+            'totalAll' => $result,
+            'articles' => $sql
+        ];
+
+    }
+
+
 
 }

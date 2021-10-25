@@ -17,22 +17,30 @@ class Home extends Controller
         $this->articlesModel = $this->model('Article');
 
         $this->categoryModel = $this->model('Category');
+
+        if (!isLoggedIn()) {
+            redirect('users/login');
+        }
+
     }
 
     /**
      * Shows all approved articles
      */
-    public function index()
+    public function index($page_nr = 1)
     {
 
         $articles = $this->articlesModel->getArticlesApproved();
         $categories = $this->categoryModel->getCategories();
+        $pagination = $this->articlesModel->pagination($page_nr);
 
         $data = [
             'articles' => $articles,
             'categories' => $categories,
+            'pagination' => $pagination
 
         ];
+
         $this->view('home/index', $data);
     }
 

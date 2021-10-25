@@ -45,16 +45,15 @@ class Tags extends Controller
         $data = [
             'name' => trim($_POST['name']),
             'tags' => $tags,
-            'created_at' => date('Y-m-d H:i:s'),
             'errors' => [],
             'name_err' => ''
         ];
 
         $data = $this->tagRequest->ValidateForm($data);
 
-        if(!empty($data['errors'])){
+        if (!empty($data['errors'])) {
             $this->view('tags/index', $data);
-        }else{
+        } else {
             $this->tagModel->addTag($data);
             flash('tag_success', 'Tag has been added');
             redirect('tags/index');
@@ -80,7 +79,8 @@ class Tags extends Controller
      * @param $id
      * Edit tag
      */
-    public function update($id){
+    public function update($id)
+    {
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
         $data = [
@@ -94,7 +94,7 @@ class Tags extends Controller
 
         if (!empty($data['errors'])) {
             $this->view('tags/edit', $data);
-        } else{
+        } else {
             $this->tagModel->editTag($data);
             flash('tag_success', 'Tag has been updated');
             redirect('tags/index');
