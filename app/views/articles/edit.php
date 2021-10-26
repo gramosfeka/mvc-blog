@@ -53,11 +53,10 @@
 
                     <div class="form-group mt-2">
                         <label for="image">Image:</label>
-                        <input name="image" type="file"
-                               class="form-control <?php echo (!empty($data['errors']['image_err'])) ? 'is-invalid' : '' ?>"
-                               id="image">
-                        <span class="invalid-feedback"><?php echo $data['errors']['image_err'] ?></span>
+                        <input name="image" type="file" class="form-control "id="image">
+                        <input type="hidden" name="image_old" value="<?php echo $data['image_old'] ?>">
                     </div>
+
                     <div class="form-group mt-2">
                         <label for="body">Description:</label>
                         <textarea
@@ -68,7 +67,7 @@
                     </div>
                     <div class="form-group mt-2">
                         <label for="date">Date:</label>
-                        <input name="created_at" type="date" value="<?php echo $data['created_at'] ?>"
+                        <input name="created_at" type="datetime-local" value="<?php echo $data['created_at'] ?>"
                                class="form-control <?php echo (!empty($data['errors']['created_at_err'])) ? 'is-invalid' : '' ?>"
                                id="created_at">
                         <span class="invalid-feedback"><?php echo $data['errors']['created_at_err'] ?></span>

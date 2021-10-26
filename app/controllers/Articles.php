@@ -1,5 +1,6 @@
 <?php
 require_once '../app/requests/ArticleRequest.php';
+require_once '../app/requests/ArticleUpdateRequest.php';
 
 class Articles extends Controller
 {
@@ -14,6 +15,7 @@ class Articles extends Controller
         $this->tagModel = $this->model('Tag');
         $this->userModel = $this->model('User');
         $this->articleRequest = new ArticleRequest();
+        $this->articleUpdateRequest = new ArticleUpdateRequest();
 
         if (!isLoggedIn()) {
             redirect('users/login');
@@ -79,13 +81,8 @@ class Articles extends Controller
         $tags = $this->tagModel->getTags();
 
 
-        if(!($_POST['image'])){
-            $folder = "img/img.jpg";
-            $destination = $folder . $_FILES['image']['name'];
-            move_uploaded_file($_FILES['image']['tmp_name'], $destination);
-
-        }else{
-            $folder = "img";
+        if (isset($_FILES['image']['name'])) {
+            $folder = "img/";
             $destination = $folder . $_FILES['image']['name'];
             move_uploaded_file($_FILES['image']['tmp_name'], $destination);
         }
@@ -149,6 +146,7 @@ class Articles extends Controller
                 'body' => $article->body,
                 'categories' => $categories,
                 'articleTags' => $articleTags,
+                'image_old' => $article->image,
                 'article' => $article,
                 'created_at' => $article->created_at,
                 'tags' => $tags,
@@ -174,11 +172,9 @@ class Articles extends Controller
 
         $articleTags = $this->tagModel->getTagByArticle($id);
 
-        if(!$_POST['image']){
-            $folder = "img/img.jpg";
-            $destination = $folder . $_FILES['image']['name'];
-            move_uploaded_file($_FILES['image']['tmp_name'], $destination);
 
+        if(($_FILES['image']['name']) == ""){
+            $destination = $_POST['image_old'];
         }else{
             $folder = "img";
             $destination = $folder . $_FILES['image']['name'];
@@ -192,6 +188,7 @@ class Articles extends Controller
             'title' => $_POST['title'],
             'body' => $_POST['body'],
             'image' => $destination,
+            'image_old' => $_POST['image_old'],
             'category_id' => $_POST['category_id'],
             'created_at' => $_POST['created_at'],
             'categories' => $categories,
@@ -208,7 +205,7 @@ class Articles extends Controller
 
         ];
 
-        $data = $this->articleRequest->ValidationForm($data);
+        $data = $this->articleUpdateRequest->ValidationForm($data);
 
         if(!empty($data['errors'])){
             $this->view('articles/edit', $data);
